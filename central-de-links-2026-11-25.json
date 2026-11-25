@@ -93,6 +93,10 @@
       "title": "Instagram CABA",
       "url": "https://instagram.com/caba_vive",
       "description": "Cuenta oficial @caba_vive",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "serif",
+      "fontSize": "sm",
       "tags": [
         "redes",
         "instagram",
