@@ -8,7 +8,39 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-sky-500/30">
-  <div class="max-w-5xl mx-auto px-4 py-10">
+
+  <!-- Pantalla de Bloqueo con Clave -->
+  <div id="lockScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="lock" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-lg font-bold text-white">Central de Links</h2>
+      <p class="text-xs text-slate-400 mt-1 mb-5">Ingresa tu clave para acceder</p>
+      
+      <form id="unlockForm" class="space-y-3">
+        <input 
+          type="password" 
+          id="passwordInput" 
+          placeholder="Contraseña..." 
+          required
+          autofocus
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-center text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
+        />
+        <label class="flex items-center justify-center gap-2 cursor-pointer text-xs text-slate-400 pt-1">
+          <input type="checkbox" id="rememberDevice" checked class="rounded bg-slate-950 border-slate-700 text-sky-500 focus:ring-0" />
+          <span>Recordar en este dispositivo</span>
+        </label>
+        <p id="lockError" class="text-xs text-red-400 hidden">Clave incorrecta. Intenta de nuevo.</p>
+        <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+          Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div id="appContent" class="hidden max-w-5xl mx-auto px-4 py-10">
     
     <!-- Encabezado y controles -->
     <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
@@ -18,7 +50,7 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-2.5">
-        <div class="relative w-full sm:w-56">
+        <div class="relative w-full sm:w-52">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           <input 
             type="text" 
@@ -42,22 +74,30 @@
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>Link</span>
         </button>
+
+        <button id="lockBtn" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-600 text-slate-400 hover:text-white transition" title="Bloquear pantalla">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+        </button>
       </div>
     </header>
 
-    <!-- Barra de herramientas de edición -->
-    <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <!-- Barra de herramientas de edición y sincronización -->
+    <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
       <div class="flex items-center gap-2 text-xs text-amber-300">
         <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-        <span>Modo edición: ordena carpetas (↑/↓) o tarjetas (←/→ o arrastrando), y edita nombres o links.</span>
+        <span>Modo edición: ordena carpetas (↑/↓) o links (←/→ o arrastrando entre carpetas), agrega fotos de portada y guarda en la nube.</span>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <button id="resetBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-300 border border-slate-700 transition">
-          Restaurar JSON
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <button id="syncGithubBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition shadow-lg shadow-sky-900/30">
+          <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i>
+          <span id="syncGithubText">Guardar en GitHub (Nube)</span>
         </button>
-        <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition">
+        <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Descargar JSON</span>
+          <span>Bajar JSON</span>
+        </button>
+        <button id="resetBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-400 border border-slate-700 transition">
+          Recargar de GitHub
         </button>
       </div>
     </div>
@@ -72,7 +112,7 @@
     </section>
 
     <!-- Contenedor Principal de Carpetas / Secciones -->
-    <main id="sectionsContainer" class="space-y-10"></main>
+    <main id="sectionsContainer" class="space-y-8"></main>
 
     <!-- Mensaje sin resultados -->
     <div id="emptyState" class="hidden text-center py-16 text-slate-500">
@@ -131,9 +171,9 @@
     </div>
   </div>
 
-  <!-- Modal para Agregar / Editar Carpeta -->
-  <div id="sectionModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+  <!-- Modal para Agregar / Editar Carpeta con Foto Destacada -->
+  <div id="sectionModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl my-8">
       <div class="flex items-center justify-between mb-4">
         <h3 id="sectionModalTitle" class="text-lg font-bold text-white">Nueva Carpeta</h3>
         <button type="button" onclick="closeSectionModal()" class="text-slate-400 hover:text-white">
@@ -180,6 +220,25 @@
           </div>
         </div>
 
+        <!-- Foto destacada / Portada -->
+        <div class="pt-1 border-t border-slate-800/80">
+          <label class="block text-xs font-medium text-slate-400 mb-1.5">Foto destacada de portada (opcional)</label>
+          <input type="text" id="sectionCoverUrl" placeholder="Pega URL de imagen (https://...) o sube archivo abajo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 mb-2" />
+          
+          <div class="flex items-center justify-between gap-2">
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer transition">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>Subir foto desde PC/Celular</span>
+              <input type="file" id="sectionCoverFile" accept="image/*" class="hidden" />
+            </label>
+            <button type="button" id="clearCoverBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar foto</button>
+          </div>
+
+          <div id="coverPreviewBox" class="mt-2.5 hidden rounded-xl overflow-hidden border border-slate-800 h-24 relative">
+            <img id="coverPreviewImg" src="" alt="Vista previa" class="w-full h-full object-cover" />
+          </div>
+        </div>
+
         <div class="flex justify-end gap-2 pt-4 border-t border-slate-800">
           <button type="button" onclick="closeSectionModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
           <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar carpeta</button>
@@ -188,21 +247,90 @@
     </div>
   </div>
 
+  <!-- Modal Token de GitHub para Guardar en la Nube -->
+  <div id="githubModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold text-white">Conectar guardado en GitHub</h3>
+        <button type="button" onclick="closeGithubModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 leading-relaxed mb-4">
+        Para que tus carpetas, fotos y links se guarden automáticamente en GitHub y se vean en todos tus dispositivos, pega tu <strong>Personal Access Token</strong> (se guarda solo en este dispositivo).
+      </p>
+      <form id="githubForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">GitHub Token (ghp_... o github_pat_...)</label>
+          <input type="password" id="githubTokenInput" required placeholder="github_pat_..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeGithubModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar y Sincronizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    const JSON_FILE = 'central-de-links-2026-11-25.json';
-    const STORAGE_KEY = 'central_links_personal_v1';
+    // ==========================================
+    // CONFIGURACIÓN PRINCIPAL
+    // ==========================================
+    const CLAVE_ACCESO = "2026"; // <-- CAMBIA ESTA CLAVE POR LA TUYA
+    const GITHUB_OWNER = "LadoB-tech";
+    const GITHUB_REPO  = "Central-de-Links-Personal";
+    const JSON_FILE    = "central-de-links-2026-11-25.json";
+    // ==========================================
+
+    const STORAGE_KEY = 'central_links_personal_v2';
+    const AUTH_KEY    = 'central_links_unlocked_v2';
+    const TOKEN_KEY   = 'central_links_gh_token';
+
+    function unlockApp(persist = false) {
+      document.getElementById('lockScreen').classList.add('hidden');
+      document.getElementById('appContent').classList.remove('hidden');
+      sessionStorage.setItem(AUTH_KEY, 'true');
+      if (persist) localStorage.setItem(AUTH_KEY, 'true');
+    }
+
+    function lockApp() {
+      sessionStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem(AUTH_KEY);
+      document.getElementById('appContent').classList.add('hidden');
+      document.getElementById('lockScreen').classList.remove('hidden');
+      document.getElementById('passwordInput').value = '';
+    }
+
+    if (sessionStorage.getItem(AUTH_KEY) === 'true' || localStorage.getItem(AUTH_KEY) === 'true') {
+      unlockApp(localStorage.getItem(AUTH_KEY) === 'true');
+    }
+
+    document.getElementById('unlockForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const input = document.getElementById('passwordInput').value;
+      const remember = document.getElementById('rememberDevice').checked;
+      if (input === CLAVE_ACCESO) {
+        document.getElementById('lockError').classList.add('hidden');
+        unlockApp(remember);
+      } else {
+        document.getElementById('lockError').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('lockBtn').addEventListener('click', lockApp);
 
     const colorMap = {
-      sky: { badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20', hover: 'hover:border-sky-500/50', icon: 'text-sky-400' },
-      indigo: { badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', hover: 'hover:border-indigo-500/50', icon: 'text-indigo-400' },
-      emerald: { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', hover: 'hover:border-emerald-500/50', icon: 'text-emerald-400' },
-      amber: { badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20', hover: 'hover:border-amber-500/50', icon: 'text-amber-400' },
-      rose: { badge: 'bg-rose-500/10 text-rose-400 border-rose-500/20', hover: 'hover:border-rose-500/50', icon: 'text-rose-400' },
-      violet: { badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20', hover: 'hover:border-violet-500/50', icon: 'text-violet-400' },
-      slate: { badge: 'bg-slate-500/10 text-slate-300 border-slate-500/20', hover: 'hover:border-slate-500/50', icon: 'text-slate-300' }
+      sky: { badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20', hover: 'hover:border-sky-500/50', icon: 'text-sky-400', border: 'border-sky-500/20' },
+      indigo: { badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', hover: 'hover:border-indigo-500/50', icon: 'text-indigo-400', border: 'border-indigo-500/20' },
+      emerald: { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', hover: 'hover:border-emerald-500/50', icon: 'text-emerald-400', border: 'border-emerald-500/20' },
+      amber: { badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20', hover: 'hover:border-amber-500/50', icon: 'text-amber-400', border: 'border-amber-500/20' },
+      rose: { badge: 'bg-rose-500/10 text-rose-400 border-rose-500/20', hover: 'hover:border-rose-500/50', icon: 'text-rose-400', border: 'border-rose-500/20' },
+      violet: { badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20', hover: 'hover:border-violet-500/50', icon: 'text-violet-400', border: 'border-violet-500/20' },
+      slate: { badge: 'bg-slate-500/10 text-slate-300 border-slate-500/20', hover: 'hover:border-slate-500/50', icon: 'text-slate-300', border: 'border-slate-800' }
     };
 
     let appData = { sections: [], links: [] };
+    let collapsedSections = {};
     let editMode = false;
     let draggedLinkId = null;
 
@@ -210,16 +338,148 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
     }
 
+    // --- Sincronización directa con GitHub API ---
+    async function pushToGithub(token) {
+      const btnText = document.getElementById('syncGithubText');
+      btnText.textContent = 'Guardando...';
+      const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${JSON_FILE}`;
+
+      try {
+        // 1. Obtener el SHA actual del archivo en GitHub
+        const getRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+
+        let sha = null;
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        // 2. Codificar JSON en Base64 soportando tildes y eñes
+        const jsonString = JSON.stringify(appData, null, 2);
+        const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+        const body = {
+          message: 'Actualiza carpetas y links desde la web',
+          content: base64Content
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!putRes.ok) {
+          const errData = await putRes.json();
+          throw new Error(errData.message || 'Error al guardar en GitHub');
+        }
+
+        btnText.textContent = '¡Guardado en Nube!';
+        setTimeout(() => { btnText.textContent = 'Guardar en GitHub (Nube)'; }, 3000);
+      } catch (err) {
+        btnText.textContent = 'Guardar en GitHub (Nube)';
+        alert('No se pudo guardar en GitHub: ' + err.message + '\nVerifica que el Token tenga permisos de escritura en el repositorio.');
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    }
+
+    function closeGithubModal() {
+      document.getElementById('githubModal').classList.add('hidden');
+      document.getElementById('githubModal').classList.remove('flex');
+    }
+
+    document.getElementById('syncGithubBtn').addEventListener('click', () => {
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      if (savedToken) {
+        pushToGithub(savedToken);
+      } else {
+        document.getElementById('githubModal').classList.remove('hidden');
+        document.getElementById('githubModal').classList.add('flex');
+      }
+    });
+
+    document.getElementById('githubForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const token = document.getElementById('githubTokenInput').value.trim();
+      if (!token) return;
+      localStorage.setItem(TOKEN_KEY, token);
+      closeGithubModal();
+      pushToGithub(token);
+    });
+
+    // --- Procesar y comprimir foto de portada ---
+    function updateCoverPreview(url) {
+      const box = document.getElementById('coverPreviewBox');
+      const img = document.getElementById('coverPreviewImg');
+      const clearBtn = document.getElementById('clearCoverBtn');
+      if (url) {
+        img.src = url;
+        box.classList.remove('hidden');
+        clearBtn.classList.remove('hidden');
+      } else {
+        img.src = '';
+        box.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('sectionCoverUrl').addEventListener('input', e => {
+      updateCoverPreview(e.target.value.trim());
+    });
+
+    document.getElementById('clearCoverBtn').addEventListener('click', () => {
+      document.getElementById('sectionCoverUrl').value = '';
+      document.getElementById('sectionCoverFile').value = '';
+      updateCoverPreview('');
+    });
+
+    document.getElementById('sectionCoverFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 900;
+          const scale = Math.min(1, maxWidth / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          document.getElementById('sectionCoverUrl').value = compressedDataUrl;
+          updateCoverPreview(compressedDataUrl);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
     // --- Gestión de Carpetas ---
+    function toggleCollapse(sectionId) {
+      if (editMode) return;
+      collapsedSections[sectionId] = !collapsedSections[sectionId];
+      render(document.getElementById('searchInput').value);
+    }
+
     function moveSection(sectionId, direction) {
       const idx = appData.sections.findIndex(s => s.id === sectionId);
       const targetIdx = idx + direction;
       if (idx === -1 || targetIdx < 0 || targetIdx >= appData.sections.length) return;
-
       const temp = appData.sections[idx];
       appData.sections[idx] = appData.sections[targetIdx];
       appData.sections[targetIdx] = temp;
-
       saveToLocal();
       render(document.getElementById('searchInput').value);
     }
@@ -231,7 +491,6 @@
       const msg = count > 0
         ? `¿Eliminar la carpeta "${sec.name}" junto con sus ${count} enlaces?`
         : `¿Eliminar la carpeta vacía "${sec.name}"?`;
-      
       if (!confirm(msg)) return;
       appData.sections = appData.sections.filter(s => s.id !== sectionId);
       appData.links = appData.links.filter(l => l.sectionId !== sectionId);
@@ -241,16 +500,20 @@
 
     function openSectionModal(section = null) {
       const modal = document.getElementById('sectionModal');
+      document.getElementById('sectionCoverFile').value = '';
       if (section) {
         document.getElementById('sectionModalTitle').textContent = 'Editar Carpeta';
         document.getElementById('sectionId').value = section.id;
         document.getElementById('sectionName').value = section.name;
         document.getElementById('sectionColor').value = section.color || 'sky';
         document.getElementById('sectionIcon').value = section.icon || 'folder';
+        document.getElementById('sectionCoverUrl').value = section.coverImage || '';
+        updateCoverPreview(section.coverImage || '');
       } else {
         document.getElementById('sectionModalTitle').textContent = 'Nueva Carpeta';
         document.getElementById('sectionForm').reset();
         document.getElementById('sectionId').value = '';
+        updateCoverPreview('');
       }
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -267,20 +530,16 @@
       const idx = appData.links.findIndex(l => l.id === linkId);
       if (idx === -1) return;
       const currentLink = appData.links[idx];
-      
       const sameSecIndices = appData.links
         .map((l, i) => l.sectionId === currentLink.sectionId ? i : -1)
         .filter(i => i !== -1);
-      
       const posInSec = sameSecIndices.indexOf(idx);
       const targetPosInSec = posInSec + direction;
       if (targetPosInSec < 0 || targetPosInSec >= sameSecIndices.length) return;
-
       const targetIdx = sameSecIndices[targetPosInSec];
       const temp = appData.links[idx];
       appData.links[idx] = appData.links[targetIdx];
       appData.links[targetIdx] = temp;
-
       saveToLocal();
       render(document.getElementById('searchInput').value);
     }
@@ -306,7 +565,6 @@
         openSectionModal();
         return;
       }
-
       const modal = document.getElementById('linkModal');
       const select = document.getElementById('linkSection');
       select.innerHTML = appData.sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
@@ -326,7 +584,6 @@
         document.getElementById('linkId').value = '';
         if (defaultSectionId) select.value = defaultSectionId;
       }
-
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -346,7 +603,7 @@
       if (!editMode) {
         return `
           <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-             class="group flex flex-col justify-between p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
+             class="group flex flex-col justify-between p-4 rounded-2xl bg-slate-950/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
             <div>
               <div class="flex items-start justify-between gap-2">
                 <h3 class="font-semibold text-slate-100 group-hover:text-white transition">${link.title}</h3>
@@ -362,11 +619,11 @@
       const safeLinkJson = JSON.stringify(link).replace(/'/g, "&#39;");
       return `
         <div draggable="${!isPinnedSection}" data-link-id="${link.id}" data-section-id="${link.sectionId}"
-             class="edit-card flex flex-col justify-between p-4 rounded-2xl bg-slate-900 border border-dashed border-slate-700 hover:border-amber-500/50 transition-all">
+             class="edit-card flex flex-col justify-between p-4 rounded-2xl bg-slate-950 border border-dashed border-slate-700 hover:border-amber-500/50 transition-all cursor-move">
           <div>
             <div class="flex items-start justify-between gap-2">
               <h3 class="font-semibold text-slate-100">${link.title}</h3>
-              <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Mover</span>
+              <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Arrastrar</span>
             </div>
             <p class="text-xs text-slate-400 mt-1 line-clamp-1">${link.url}</p>
           </div>
@@ -414,17 +671,30 @@
           e.preventDefault();
           const targetId = card.dataset.linkId;
           if (!draggedLinkId || draggedLinkId === targetId) return;
-
           const fromIdx = appData.links.findIndex(l => l.id === draggedLinkId);
           const toIdx = appData.links.findIndex(l => l.id === targetId);
           if (fromIdx === -1 || toIdx === -1) return;
-
           appData.links[fromIdx].sectionId = appData.links[toIdx].sectionId;
           const [movedItem] = appData.links.splice(fromIdx, 1);
           appData.links.splice(toIdx, 0, movedItem);
-
           saveToLocal();
           render(document.getElementById('searchInput').value);
+        });
+      });
+
+      // Permitir soltar un link directamente sobre una carpeta vacía
+      document.querySelectorAll('[data-drop-section]').forEach(zone => {
+        zone.addEventListener('dragover', e => e.preventDefault());
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          const targetSectionId = zone.dataset.dropSection;
+          if (!draggedLinkId || !targetSectionId) return;
+          const link = appData.links.find(l => l.id === draggedLinkId);
+          if (link) {
+            link.sectionId = targetSectionId;
+            saveToLocal();
+            render(document.getElementById('searchInput').value);
+          }
         });
       });
     }
@@ -449,6 +719,7 @@
       if (filteredLinks.length === 0 && !editMode) {
         pinnedContainer.classList.add('hidden');
         emptyState.classList.remove('hidden');
+        lucide.createIcons();
         return;
       }
 
@@ -471,10 +742,18 @@
 
         const theme = colorMap[section.color] || colorMap.slate;
         const safeSecJson = JSON.stringify(section).replace(/'/g, "&#39;");
+        const isCollapsed = !!collapsedSections[section.id] && !query && !editMode;
+
+        const coverBannerHtml = section.coverImage ? `
+          <div class="relative h-32 sm:h-40 w-full overflow-hidden border-b border-slate-800/80">
+            <img src="${section.coverImage}" alt="${section.name}" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+          </div>
+        ` : '';
 
         const sectionControls = editMode ? `
-          <div class="flex items-center gap-1 ml-auto">
-            <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs bg-sky-500/15 hover:bg-sky-500/30 text-sky-400 mr-1" title="Agregar link en esta carpeta">
+          <div class="flex flex-wrap items-center gap-1 ml-auto">
+            <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-sky-500/15 hover:bg-sky-500/30 text-sky-400 mr-1" title="Agregar link en esta carpeta">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
               <span>Link</span>
             </button>
@@ -484,32 +763,42 @@
             <button onclick="moveSection('${section.id}', 1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Bajar carpeta">
               <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick='openSectionModal(${safeSecJson})' class="p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-amber-400" title="Renombrar o cambiar color">
+            <button onclick='openSectionModal(${safeSecJson})' class="p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-amber-400" title="Editar nombre, color o foto">
               <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
             </button>
             <button onclick="deleteSection('${section.id}')" class="p-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400" title="Eliminar carpeta">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>
           </div>
-        ` : '';
+        ` : `
+          <button onclick="toggleCollapse('${section.id}')" class="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition" title="${isCollapsed ? 'Expandir carpeta' : 'Minimizar carpeta'}">
+            <i data-lucide="${isCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4"></i>
+          </button>
+        `;
 
         const emptyFolderHint = (secLinks.length === 0 && editMode)
-          ? `<div class="col-span-full p-4 rounded-xl border border-dashed border-slate-800 text-xs text-slate-500 text-center">Carpeta vacía — haz clic en "+ Link" para agregar enlaces aquí.</div>`
+          ? `<div data-drop-section="${section.id}" class="col-span-full p-6 rounded-xl border border-dashed border-slate-700 text-xs text-slate-400 text-center">Carpeta vacía — arrastra un link hasta aquí o haz clic en "+ Link".</div>`
           : '';
 
         const sectionEl = document.createElement('section');
+        sectionEl.className = `rounded-3xl bg-slate-900/50 border ${theme.border} overflow-hidden shadow-lg shadow-black/20`;
         sectionEl.innerHTML = `
-          <div class="flex flex-wrap items-center gap-2.5 mb-4">
-            <span class="p-1.5 rounded-lg border ${theme.badge}">
-              <i data-lucide="${section.icon || 'folder'}" class="w-4 h-4 ${theme.icon}"></i>
-            </span>
-            <h2 class="text-base font-semibold text-slate-200">${section.name}</h2>
-            <span class="text-xs text-slate-500 font-medium">(${secLinks.length})</span>
-            ${sectionControls}
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            ${secLinks.map(link => createCard(link, section.color, false)).join('')}
-            ${emptyFolderHint}
+          ${coverBannerHtml}
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center gap-2.5 ${isCollapsed ? '' : 'mb-5'}">
+              <span class="p-2 rounded-xl border ${theme.badge}">
+                <i data-lucide="${section.icon || 'folder'}" class="w-4 h-4 ${theme.icon}"></i>
+              </span>
+              <h2 onclick="toggleCollapse('${section.id}')" class="text-base sm:text-lg font-semibold text-slate-100 cursor-pointer hover:text-white">${section.name}</h2>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">${secLinks.length}</span>
+              ${sectionControls}
+            </div>
+            ${isCollapsed ? '' : `
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${secLinks.map(link => createCard(link, section.color, false)).join('')}
+                ${emptyFolderHint}
+              </div>
+            `}
           </div>
         `;
         sectionsContainer.appendChild(sectionEl);
@@ -519,7 +808,6 @@
       attachDragEvents();
     }
 
-    // Eventos principales
     document.getElementById('toggleEditBtn').addEventListener('click', () => {
       editMode = !editMode;
       const toolbar = document.getElementById('editToolbar');
@@ -537,7 +825,6 @@
     document.getElementById('addSectionBtn').addEventListener('click', () => openSectionModal());
     document.getElementById('addLinkBtn').addEventListener('click', () => openLinkModal());
 
-    // Guardar Carpeta
     document.getElementById('sectionForm').addEventListener('submit', e => {
       e.preventDefault();
       const id = document.getElementById('sectionId').value;
@@ -545,28 +832,25 @@
         id: id || 'sec-' + Date.now(),
         name: document.getElementById('sectionName').value.trim(),
         color: document.getElementById('sectionColor').value,
-        icon: document.getElementById('sectionIcon').value
+        icon: document.getElementById('sectionIcon').value,
+        coverImage: document.getElementById('sectionCoverUrl').value.trim()
       };
-
       if (id) {
         const idx = appData.sections.findIndex(s => s.id === id);
         if (idx !== -1) appData.sections[idx] = secObj;
       } else {
         appData.sections.push(secObj);
       }
-
       saveToLocal();
       closeSectionModal();
       render(document.getElementById('searchInput').value);
     });
 
-    // Guardar Link
     document.getElementById('linkForm').addEventListener('submit', e => {
       e.preventDefault();
       const id = document.getElementById('linkId').value;
       const tagsRaw = document.getElementById('linkTags').value;
       const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-
       const linkObj = {
         id: id || 'lnk-' + Date.now(),
         sectionId: document.getElementById('linkSection').value,
@@ -576,14 +860,12 @@
         tags,
         pinned: document.getElementById('linkPinned').checked
       };
-
       if (id) {
         const idx = appData.links.findIndex(l => l.id === id);
         if (idx !== -1) appData.links[idx] = linkObj;
       } else {
         appData.links.push(linkObj);
       }
-
       saveToLocal();
       closeLinkModal();
       render(document.getElementById('searchInput').value);
@@ -601,32 +883,39 @@
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!confirm('¿Descartar los cambios locales y volver a cargar el JSON original de GitHub?')) return;
+      if (!confirm('¿Descartar cambios no sincronizados y recargar desde GitHub?')) return;
       localStorage.removeItem(STORAGE_KEY);
       location.reload();
     });
 
     document.getElementById('searchInput').addEventListener('input', e => render(e.target.value));
 
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      appData = JSON.parse(saved);
-      render();
-    } else {
-      fetch(JSON_FILE)
-        .then(res => res.json())
-        .then(data => {
+    lucide.createIcons();
+
+    // Carga inicial: siempre intenta traer la última versión de GitHub primero para mantener dispositivos sincronizados
+    fetch(JSON_FILE + '?t=' + Date.now())
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(data => {
+        const localSaved = localStorage.getItem(STORAGE_KEY);
+        // Si nunca se editó localmente o si el archivo remoto tiene datos, prioriza lo último guardado
+        if (!localSaved) {
           appData = data;
+          saveToLocal();
+        } else {
+          appData = JSON.parse(localSaved);
+        }
+        render();
+      })
+      .catch(() => {
+        const localSaved = localStorage.getItem(STORAGE_KEY);
+        if (localSaved) {
+          appData = JSON.parse(localSaved);
           render();
-        })
-        .catch(() => {
-          document.getElementById('sectionsContainer').innerHTML = `
-            <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              No se pudo cargar <strong>${JSON_FILE}</strong>.
-            </div>
-          `;
-        });
-    }
+        }
+      });
   </script>
 </body>
 </html>
