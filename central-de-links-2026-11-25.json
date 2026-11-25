@@ -108,9 +108,16 @@
     {
       "id": "lnk-v5",
       "sectionId": "sec-vive",
-      "title": "Web estadística",
+      "title": "MONITORI POLITICO",
       "url": "https://viveclickcaba-sketch.github.io/monitor-politico-x/",
       "description": "Monitor político y métricas de redes",
+      "imageUrl": "",
+      "imageSize": "md",
+      "imageFit": "cover",
+      "cardColor": "indigo",
+      "textColor": "amber",
+      "fontFamily": "sans",
+      "fontSize": "base",
       "tags": [
         "estadística",
         "monitor",
