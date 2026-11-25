@@ -77,6 +77,10 @@
       "title": "Web CABA",
       "url": "https://vive.click/caba",
       "description": "Edición Ciudad Autónoma de Buenos Aires",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "serif",
+      "fontSize": "sm",
       "tags": [
         "caba",
         "noticias"
