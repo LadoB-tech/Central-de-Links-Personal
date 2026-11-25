@@ -10,22 +10,52 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-sky-500/30">
   <div class="max-w-5xl mx-auto px-4 py-10">
     
-    <!-- Encabezado y buscador -->
-    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 border-b border-slate-800 pb-6">
+    <!-- Encabezado y controles -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
         <p class="text-sm text-slate-400 mt-1">Accesos directos, gestión editorial, INTI y estudio</p>
       </div>
-      <div class="relative w-full sm:w-72">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Buscar link o etiqueta..." 
-          class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
-        />
+      
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="relative w-full sm:w-60">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Buscar link o etiqueta..." 
+            class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
+          />
+        </div>
+
+        <button id="toggleEditBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-200 transition">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          <span id="toggleEditText">Editar</span>
+        </button>
+
+        <button id="addLinkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Nuevo</span>
+        </button>
       </div>
     </header>
+
+    <!-- Barra de herramientas de edición (visible en modo edición) -->
+    <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs text-amber-300">
+        <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+        <span>Modo edición activo: usa las flechas o arrastra las tarjetas para ordenar, edita o agrega nuevos links. Los cambios se guardan en este navegador.</span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="resetBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-300 border border-slate-700 transition" title="Volver a los datos originales del JSON en GitHub">
+          Restaurar JSON original
+        </button>
+        <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Descargar JSON</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Contenedor de Fijados -->
     <section id="pinnedContainer" class="mb-10 hidden">
@@ -43,56 +73,237 @@
     <div id="emptyState" class="hidden text-center py-16 text-slate-500">
       No se encontraron enlaces que coincidan con tu búsqueda.
     </div>
+  </div>
 
+  <!-- Modal para Agregar / Editar Link -->
+  <div id="linkModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="modalTitle" class="text-lg font-bold text-white">Nuevo Link</h3>
+        <button id="closeModalBtn" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="linkForm" class="space-y-4">
+        <input type="hidden" id="linkId" />
+        
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Sección</label>
+          <select id="linkSection" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Título</label>
+          <input type="text" id="linkTitle" required placeholder="Ej: Drive Vive CABA" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">URL</label>
+          <input type="url" id="linkUrl" required placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Descripción (opcional)</label>
+          <input type="text" id="linkDesc" placeholder="Breve detalle del enlace" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Etiquetas separadas por coma (opcional)</label>
+          <input type="text" id="linkTags" placeholder="caba, gestión, drive" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <label class="flex items-center gap-2 cursor-pointer pt-1">
+          <input type="checkbox" id="linkPinned" class="rounded bg-slate-950 border-slate-700 text-sky-500 focus:ring-0" />
+          <span class="text-sm text-slate-300">Fijar en "Accesos Fijados" arriba</span>
+        </label>
+
+        <div class="flex justify-end gap-2 pt-4 border-t border-slate-800">
+          <button type="button" id="cancelModalBtn" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
     const JSON_FILE = 'central-de-links-2026-11-25.json';
+    const STORAGE_KEY = 'central_links_personal_v1';
 
     const colorMap = {
-      sky: {
-        badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-        hover: 'hover:border-sky-500/50',
-        icon: 'text-sky-400'
-      },
-      indigo: {
-        badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-        hover: 'hover:border-indigo-500/50',
-        icon: 'text-indigo-400'
-      },
-      emerald: {
-        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-        hover: 'hover:border-emerald-500/50',
-        icon: 'text-emerald-400'
-      },
-      slate: {
-        badge: 'bg-slate-500/10 text-slate-300 border-slate-500/20',
-        hover: 'hover:border-slate-500/50',
-        icon: 'text-slate-300'
-      }
+      sky: { badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20', hover: 'hover:border-sky-500/50', icon: 'text-sky-400' },
+      indigo: { badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', hover: 'hover:border-indigo-500/50', icon: 'text-indigo-400' },
+      emerald: { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', hover: 'hover:border-emerald-500/50', icon: 'text-emerald-400' },
+      slate: { badge: 'bg-slate-500/10 text-slate-300 border-slate-500/20', hover: 'hover:border-slate-500/50', icon: 'text-slate-300' }
     };
 
     let appData = { sections: [], links: [] };
+    let editMode = false;
+    let draggedLinkId = null;
 
-    function createCard(link, sectionColor) {
+    function saveToLocal() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    }
+
+    function moveLink(linkId, direction) {
+      const idx = appData.links.findIndex(l => l.id === linkId);
+      if (idx === -1) return;
+      const currentLink = appData.links[idx];
+      
+      // Buscar el anterior o siguiente dentro de la misma sección
+      const sameSecIndices = appData.links
+        .map((l, i) => l.sectionId === currentLink.sectionId ? i : -1)
+        .filter(i => i !== -1);
+      
+      const posInSec = sameSecIndices.indexOf(idx);
+      const targetPosInSec = posInSec + direction;
+      if (targetPosInSec < 0 || targetPosInSec >= sameSecIndices.length) return;
+
+      const targetIdx = sameSecIndices[targetPosInSec];
+      const temp = appData.links[idx];
+      appData.links[idx] = appData.links[targetIdx];
+      appData.links[targetIdx] = temp;
+
+      saveToLocal();
+      render(document.getElementById('searchInput').value);
+    }
+
+    function togglePin(linkId) {
+      const link = appData.links.find(l => l.id === linkId);
+      if (!link) return;
+      link.pinned = !link.pinned;
+      saveToLocal();
+      render(document.getElementById('searchInput').value);
+    }
+
+    function deleteLink(linkId) {
+      if (!confirm('¿Eliminar este enlace?')) return;
+      appData.links = appData.links.filter(l => l.id !== linkId);
+      saveToLocal();
+      render(document.getElementById('searchInput').value);
+    }
+
+    function openModal(link = null) {
+      const modal = document.getElementById('linkModal');
+      const select = document.getElementById('linkSection');
+      select.innerHTML = appData.sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+      if (link) {
+        document.getElementById('modalTitle').textContent = 'Editar Link';
+        document.getElementById('linkId').value = link.id;
+        select.value = link.sectionId;
+        document.getElementById('linkTitle').value = link.title;
+        document.getElementById('linkUrl').value = link.url;
+        document.getElementById('linkDesc').value = link.description || '';
+        document.getElementById('linkTags').value = (link.tags || []).join(', ');
+        document.getElementById('linkPinned').checked = !!link.pinned;
+      } else {
+        document.getElementById('modalTitle').textContent = 'Nuevo Link';
+        document.getElementById('linkForm').reset();
+        document.getElementById('linkId').value = '';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('linkModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function createCard(link, sectionColor, isPinnedSection = false) {
       const theme = colorMap[sectionColor] || colorMap.slate;
       const tagsHtml = (link.tags || [])
         .map(tag => `<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-400">#${tag}</span>`)
         .join('');
 
+      if (!editMode) {
+        return `
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+             class="group flex flex-col justify-between p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <h3 class="font-semibold text-slate-100 group-hover:text-white transition">${link.title}</h3>
+                <i data-lucide="external-link" class="w-4 h-4 text-slate-500 group-hover:text-slate-300 shrink-0 mt-0.5 transition"></i>
+              </div>
+              <p class="text-xs text-slate-400 mt-1.5 line-clamp-2">${link.description || ''}</p>
+            </div>
+            ${tagsHtml ? `<div class="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-slate-800/60">${tagsHtml}</div>` : ''}
+          </a>
+        `;
+      }
+
+      // Vista de tarjeta en modo edición
       return `
-        <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-           class="group flex flex-col justify-between p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
+        <div draggable="${!isPinnedSection}" data-link-id="${link.id}" data-section-id="${link.sectionId}"
+             class="edit-card flex flex-col justify-between p-4 rounded-2xl bg-slate-900 border border-dashed border-slate-700 hover:border-amber-500/50 transition-all">
           <div>
             <div class="flex items-start justify-between gap-2">
-              <h3 class="font-semibold text-slate-100 group-hover:text-white transition">${link.title}</h3>
-              <i data-lucide="external-link" class="w-4 h-4 text-slate-500 group-hover:text-slate-300 shrink-0 mt-0.5 transition"></i>
+              <h3 class="font-semibold text-slate-100">${link.title}</h3>
+              <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Editar</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1.5 line-clamp-2">${link.description || ''}</p>
+            <p class="text-xs text-slate-400 mt-1 line-clamp-1">${link.url}</p>
           </div>
-          ${tagsHtml ? `<div class="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-slate-800/60">${tagsHtml}</div>` : ''}
-        </a>
+          
+          <div class="flex items-center justify-between gap-1 mt-4 pt-3 border-t border-slate-800">
+            <div class="flex items-center gap-1">
+              ${!isPinnedSection ? `
+                <button onclick="moveLink('${link.id}', -1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Mover antes">
+                  <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="moveLink('${link.id}', 1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Mover después">
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              ` : ''}
+              <button onclick="togglePin('${link.id}')" class="p-1.5 rounded-lg ${link.pinned ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}" title="Fijar / Desfijar">
+                <i data-lucide="pin" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick='openModal(${JSON.stringify(link).replace(/'/g, "&#39;")})' class="p-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/30 text-sky-400" title="Editar datos">
+                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="deleteLink('${link.id}')" class="p-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400" title="Eliminar">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       `;
+    }
+
+    function attachDragEvents() {
+      if (!editMode) return;
+      document.querySelectorAll('.edit-card[draggable="true"]').forEach(card => {
+        card.addEventListener('dragstart', () => {
+          draggedLinkId = card.dataset.linkId;
+          card.classList.add('opacity-50');
+        });
+        card.addEventListener('dragend', () => {
+          draggedLinkId = null;
+          card.classList.remove('opacity-50');
+        });
+        card.addEventListener('dragover', e => e.preventDefault());
+        card.addEventListener('drop', e => {
+          e.preventDefault();
+          const targetId = card.dataset.linkId;
+          if (!draggedLinkId || draggedLinkId === targetId) return;
+
+          const fromIdx = appData.links.findIndex(l => l.id === draggedLinkId);
+          const toIdx = appData.links.findIndex(l => l.id === targetId);
+          if (fromIdx === -1 || toIdx === -1) return;
+
+          // Actualizar sección si se arrastró a otra categoría
+          appData.links[fromIdx].sectionId = appData.links[toIdx].sectionId;
+          const [movedItem] = appData.links.splice(fromIdx, 1);
+          appData.links.splice(toIdx, 0, movedItem);
+
+          saveToLocal();
+          render(document.getElementById('searchInput').value);
+        });
+      });
     }
 
     function render(filterText = '') {
@@ -107,13 +318,12 @@
 
       const filteredLinks = appData.links.filter(link => {
         if (!query) return true;
-        const inTitle = link.title.toLowerCase().includes(query);
-        const inDesc = (link.description || '').toLowerCase().includes(query);
-        const inTags = (link.tags || []).some(t => t.toLowerCase().includes(query));
-        return inTitle || inDesc || inTags;
+        return link.title.toLowerCase().includes(query) ||
+               (link.description || '').toLowerCase().includes(query) ||
+               (link.tags || []).some(t => t.toLowerCase().includes(query));
       });
 
-      if (filteredLinks.length === 0) {
+      if (filteredLinks.length === 0 && !editMode) {
         pinnedContainer.classList.add('hidden');
         emptyState.classList.remove('hidden');
         return;
@@ -121,22 +331,20 @@
 
       emptyState.classList.add('hidden');
 
-      // Renderizar fijados (solo cuando no hay filtro activo)
       const pinnedLinks = filteredLinks.filter(l => l.pinned);
       if (pinnedLinks.length > 0 && !query) {
         pinnedContainer.classList.remove('hidden');
         pinnedGrid.innerHTML = pinnedLinks.map(link => {
           const sec = appData.sections.find(s => s.id === link.sectionId);
-          return createCard(link, sec ? sec.color : 'slate');
+          return createCard(link, sec ? sec.color : 'slate', true);
         }).join('');
       } else {
         pinnedContainer.classList.add('hidden');
       }
 
-      // Renderizar secciones
       appData.sections.forEach(section => {
         const secLinks = filteredLinks.filter(l => l.sectionId === section.id);
-        if (secLinks.length === 0) return;
+        if (secLinks.length === 0 && !editMode) return;
 
         const theme = colorMap[section.color] || colorMap.slate;
         const sectionEl = document.createElement('section');
@@ -149,32 +357,102 @@
             <span class="text-xs text-slate-500 font-medium">(${secLinks.length})</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            ${secLinks.map(link => createCard(link, section.color)).join('')}
+            ${secLinks.map(link => createCard(link, section.color, false)).join('')}
           </div>
         `;
         sectionsContainer.appendChild(sectionEl);
       });
 
       lucide.createIcons();
+      attachDragEvents();
     }
 
-    fetch(JSON_FILE)
-      .then(res => res.json())
-      .then(data => {
-        appData = data;
-        render();
-      })
-      .catch(err => {
-        document.getElementById('sectionsContainer').innerHTML = `
-          <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-            No se pudo cargar <strong>${JSON_FILE}</strong>. Asegúrate de que ambos archivos estén en la misma carpeta.
-          </div>
-        `;
-      });
-
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      render(e.target.value);
+    // Eventos de botones
+    document.getElementById('toggleEditBtn').addEventListener('click', () => {
+      editMode = !editMode;
+      const toolbar = document.getElementById('editToolbar');
+      const btnText = document.getElementById('toggleEditText');
+      if (editMode) {
+        toolbar.classList.remove('hidden');
+        btnText.textContent = 'Listo';
+      } else {
+        toolbar.classList.add('hidden');
+        btnText.textContent = 'Editar';
+      }
+      render(document.getElementById('searchInput').value);
     });
+
+    document.getElementById('addLinkBtn').addEventListener('click', () => openModal());
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+
+    document.getElementById('linkForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const id = document.getElementById('linkId').value;
+      const tagsRaw = document.getElementById('linkTags').value;
+      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+      const linkObj = {
+        id: id || 'lnk-' + Date.now(),
+        sectionId: document.getElementById('linkSection').value,
+        title: document.getElementById('linkTitle').value.trim(),
+        url: document.getElementById('linkUrl').value.trim(),
+        description: document.getElementById('linkDesc').value.trim(),
+        tags,
+        pinned: document.getElementById('linkPinned').checked
+      };
+
+      if (id) {
+        const idx = appData.links.findIndex(l => l.id === id);
+        if (idx !== -1) appData.links[idx] = linkObj;
+      } else {
+        appData.links.push(linkObj);
+      }
+
+      saveToLocal();
+      closeModal();
+      render(document.getElementById('searchInput').value);
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const dataStr = JSON.stringify(appData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = JSON_FILE;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('¿Descartar los cambios locales y volver a cargar el JSON original de GitHub?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', e => render(e.target.value));
+
+    // Inicialización: prioriza cambios locales, si no existen carga el JSON de GitHub
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      appData = JSON.parse(saved);
+      render();
+    } else {
+      fetch(JSON_FILE)
+        .then(res => res.json())
+        .then(data => {
+          appData = data;
+          render();
+        })
+        .catch(() => {
+          document.getElementById('sectionsContainer').innerHTML = `
+            <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              No se pudo cargar <strong>${JSON_FILE}</strong>.
+            </div>
+          `;
+        });
+    }
   </script>
 </body>
 </html>
