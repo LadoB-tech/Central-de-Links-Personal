@@ -38,12 +38,6 @@
       "coverPos": "top"
     },
     {
-      "id": "sec-ies",
-      "name": "Profesorado (IES N.° 1)",
-      "color": "emerald",
-      "icon": "graduation-cap"
-    },
-    {
       "id": "sec-1795629893058",
       "name": "MONITOR POLÍTICO",
       "color": "slate",
@@ -52,6 +46,12 @@
       "coverSize": "md",
       "coverFit": "cover",
       "coverPos": "top"
+    },
+    {
+      "id": "sec-ies",
+      "name": "Profesorado (IES N.° 1)",
+      "color": "emerald",
+      "icon": "graduation-cap"
     },
     {
       "id": "sec-1795628619810",
