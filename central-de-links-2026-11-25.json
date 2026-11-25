@@ -141,9 +141,13 @@
     {
       "id": "lnk-v6",
       "sectionId": "sec-vive",
-      "title": "Corrida de la web",
+      "title": "Corrida MONITOR",
       "url": "https://github.com/viveclickcaba-sketch/monitor-politico-x/actions/",
       "description": "GitHub Actions de actualización del monitor",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
       "tags": [
         "github",
         "actions",
