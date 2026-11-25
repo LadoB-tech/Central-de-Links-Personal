@@ -325,10 +325,10 @@
       "title": "Pagar alquiler y servicios",
       "url": "https://claude.ai/artifact/LBCaXhDpn1CX1x4oTFhTAm",
       "description": "",
-      "cardColor": "inherit",
-      "textColor": "white",
-      "fontFamily": "sans",
-      "fontSize": "base",
+      "cardColor": "emerald",
+      "textColor": "emerald",
+      "fontFamily": "serif",
+      "fontSize": "lg",
       "tags": [],
       "pinned": false
     }
