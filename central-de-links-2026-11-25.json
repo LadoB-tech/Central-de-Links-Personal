@@ -341,6 +341,22 @@
       "fontSize": "lg",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795631074034",
+      "sectionId": "sec-vive",
+      "title": "Portadas",
+      "url": "https://claude.ai/artifact/S6bYXzkjvYyirX6qALkTJE",
+      "description": "",
+      "imageUrl": "",
+      "imageSize": "md",
+      "imageFit": "cover",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
+      "tags": [],
+      "pinned": false
     }
   ]
 }
