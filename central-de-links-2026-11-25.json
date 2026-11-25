@@ -271,7 +271,7 @@
       "cardColor": "slate",
       "textColor": "white",
       "fontFamily": "sans",
-      "fontSize": "base",
+      "fontSize": "sm",
       "tags": [
         "tareas",
         "productividad"
