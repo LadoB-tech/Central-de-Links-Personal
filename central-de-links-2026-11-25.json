@@ -354,7 +354,7 @@
       "cardColor": "inherit",
       "textColor": "white",
       "fontFamily": "sans",
-      "fontSize": "base",
+      "fontSize": "xl",
       "tags": [],
       "pinned": false
     }
