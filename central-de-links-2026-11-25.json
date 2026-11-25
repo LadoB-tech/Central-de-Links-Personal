@@ -318,6 +318,19 @@
       "description": "",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795629452106",
+      "sectionId": "sec-personal",
+      "title": "Pagar alquiler y servicios",
+      "url": "https://claude.ai/artifact/LBCaXhDpn1CX1x4oTFhTAm",
+      "description": "",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
+      "tags": [],
+      "pinned": false
     }
   ]
 }
