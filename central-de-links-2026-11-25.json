@@ -1,0 +1,241 @@
+{
+  "sections": [
+    {
+      "id": "sec-vive",
+      "name": "Vive CABA / Medios",
+      "color": "sky",
+      "icon": "newspaper"
+    },
+    {
+      "id": "sec-inti",
+      "name": "INTI",
+      "color": "indigo",
+      "icon": "building-2"
+    },
+    {
+      "id": "sec-ies",
+      "name": "Profesorado (IES N.° 1)",
+      "color": "emerald",
+      "icon": "graduation-cap"
+    },
+    {
+      "id": "sec-personal",
+      "name": "Personal",
+      "color": "slate",
+      "icon": "user"
+    }
+  ],
+  "links": [
+    {
+      "id": "lnk-v1",
+      "sectionId": "sec-vive",
+      "title": "Web General",
+      "url": "https://vive.click",
+      "description": "Portal principal de Vive",
+      "tags": [
+        "web",
+        "portal"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v2",
+      "sectionId": "sec-vive",
+      "title": "Web CABA",
+      "url": "https://vive.click/caba",
+      "description": "Edición Ciudad Autónoma de Buenos Aires",
+      "tags": [
+        "caba",
+        "noticias"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v3",
+      "sectionId": "sec-vive",
+      "title": "Instagram CABA",
+      "url": "https://instagram.com/caba_vive",
+      "description": "Cuenta oficial @caba_vive",
+      "tags": [
+        "redes",
+        "instagram",
+        "caba"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v4",
+      "sectionId": "sec-vive",
+      "title": "Instagram La Plata",
+      "url": "https://instagram.com/vive.laplata",
+      "description": "Cuenta oficial @vive.laplata",
+      "tags": [
+        "redes",
+        "instagram",
+        "la plata"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v5",
+      "sectionId": "sec-vive",
+      "title": "Web estadística",
+      "url": "https://viveclickcaba-sketch.github.io/monitor-politico-x/",
+      "description": "Monitor político y métricas de redes",
+      "tags": [
+        "estadística",
+        "monitor",
+        "caba"
+      ],
+      "pinned": true
+    },
+    {
+      "id": "lnk-v6",
+      "sectionId": "sec-vive",
+      "title": "Corrida de la web",
+      "url": "https://github.com/viveclickcaba-sketch/monitor-politico-x/actions/",
+      "description": "GitHub Actions de actualización del monitor",
+      "tags": [
+        "github",
+        "actions",
+        "deploy"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v7",
+      "sectionId": "sec-vive",
+      "title": "App de redacción",
+      "url": "https://share.gemini.google/aauB7jZgurKS",
+      "description": "Asistente editorial para notas y copys",
+      "tags": [
+        "ia",
+        "redacción",
+        "gemini"
+      ],
+      "pinned": true
+    },
+    {
+      "id": "lnk-v8",
+      "sectionId": "sec-vive",
+      "title": "App de Sala por Sala",
+      "url": "https://claude.ai/artifact/LHDuJoHZHKPCU2LQrXkjpw",
+      "description": "Herramienta interactiva Sala por Sala",
+      "tags": [
+        "app",
+        "claude",
+        "datos"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-v9",
+      "sectionId": "sec-vive",
+      "title": "App de Radar",
+      "url": "https://claude.ai/artifact/MmpxKE7z7J1NVKGQNP4Gh",
+      "description": "Radar de seguimiento y coyuntura",
+      "tags": [
+        "radar",
+        "claude",
+        "análisis"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-i1",
+      "sectionId": "sec-inti",
+      "title": "Web Oficial INTI",
+      "url": "https://www.argentina.gob.ar/inti",
+      "description": "Instituto Nacional de Tecnología Industrial",
+      "tags": [
+        "inti",
+        "institucional"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-i2",
+      "sectionId": "sec-inti",
+      "title": "Intranet INTI",
+      "url": "https://intranet.inti.gob.ar",
+      "description": "Portal interno y comunicaciones",
+      "tags": [
+        "inti",
+        "intranet"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-i3",
+      "sectionId": "sec-inti",
+      "title": "Portal RRHH / Recibos",
+      "url": "https://rrhh.inti.gob.ar",
+      "description": "Recibos de sueldo y autogestión",
+      "tags": [
+        "inti",
+        "rrhh",
+        "recibos"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-p1",
+      "sectionId": "sec-ies",
+      "title": "Sitio Oficial IES N.° 1",
+      "url": "https://ies1-caba.infd.edu.ar/sitio/",
+      "description": "Dra. Alicia Moreau de Justo",
+      "tags": [
+        "ies1",
+        "profesorado"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-p2",
+      "sectionId": "sec-ies",
+      "title": "Campus Virtual",
+      "url": "https://ies1-caba.infd.edu.ar/aula/",
+      "description": "Aulas virtuales y bibliografía",
+      "tags": [
+        "ies1",
+        "campus",
+        "aulas"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-p3",
+      "sectionId": "sec-ies",
+      "title": "SIU Guaraní",
+      "url": "https://guarani-autogestionagencia.bue.edu.ar/",
+      "description": "Inscripciones a materias y exámenes",
+      "tags": [
+        "siu",
+        "guaraní",
+        "autogestión"
+      ],
+      "pinned": false
+    },
+    {
+      "id": "lnk-per1",
+      "sectionId": "sec-personal",
+      "title": "App de tareas",
+      "url": "https://viveclickcaba-sketch.github.io/mis-tareas/",
+      "description": "Gestor personal de pendientes diarios",
+      "tags": [
+        "tareas",
+        "productividad"
+      ],
+      "pinned": true
+    },
+    {
+      "id": "lnk-1795623759076",
+      "sectionId": "sec-personal",
+      "title": "billetera radar ofertas",
+      "url": "https://economizadordebilletera.netlify.app/?app=1",
+      "description": "billetera virtual",
+      "tags": [],
+      "pinned": false
+    }
+  ]
+}
