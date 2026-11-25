@@ -61,6 +61,10 @@
       "title": "Web General",
       "url": "https://vive.click",
       "description": "Portal principal de Vive",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "serif",
+      "fontSize": "sm",
       "tags": [
         "web",
         "portal"
