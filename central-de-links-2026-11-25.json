@@ -246,6 +246,10 @@
       "title": "App de tareas",
       "url": "https://viveclickcaba-sketch.github.io/mis-tareas/",
       "description": "Gestor personal de pendientes diarios",
+      "cardColor": "slate",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
       "tags": [
         "tareas",
         "productividad"
