@@ -128,6 +128,10 @@
       "title": "App de redacción",
       "url": "https://share.gemini.google/aauB7jZgurKS",
       "description": "Asistente editorial para notas y copys",
+      "cardColor": "indigo",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
       "tags": [
         "ia",
         "redacción",
