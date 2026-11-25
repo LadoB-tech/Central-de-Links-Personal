@@ -175,9 +175,13 @@
     {
       "id": "lnk-v8",
       "sectionId": "sec-vive",
-      "title": "App de Sala por Sala",
+      "title": "Sala por Sala",
       "url": "https://claude.ai/artifact/LHDuJoHZHKPCU2LQrXkjpw",
       "description": "Herramienta interactiva Sala por Sala",
+      "cardColor": "inherit",
+      "textColor": "rose",
+      "fontFamily": "mono",
+      "fontSize": "base",
       "tags": [
         "app",
         "claude",
