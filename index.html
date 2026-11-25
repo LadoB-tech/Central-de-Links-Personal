@@ -56,7 +56,6 @@
       <div>
         <div class="flex flex-wrap items-center gap-3">
           <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
-          <!-- Indicador automático de guardado en la nube -->
           <span id="cloudStatusBadge" onclick="openGithubModal()" class="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 transition" title="Clic para configurar o cambiar el Token de GitHub">
             <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
             <span id="cloudStatusText">Sin conectar nube</span>
@@ -117,7 +116,6 @@
 
     <!-- VISTA INICIO: Grilla visual de Carpetas con Fotos -->
     <div id="homeView">
-      <!-- Accesos Fijados (si existen) -->
       <section id="pinnedContainer" class="mb-10 hidden">
         <div class="flex items-center gap-2 mb-4">
           <i data-lucide="pin" class="w-4 h-4 text-amber-400"></i>
@@ -126,7 +124,6 @@
         <div id="pinnedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
-      <!-- Grilla de Todas las Carpetas -->
       <section>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
@@ -148,10 +145,7 @@
         </button>
       </div>
 
-      <!-- Cabecera visual de la carpeta abierta -->
       <div id="folderDetailHeader" class="rounded-3xl bg-slate-900/70 border border-slate-800 overflow-hidden mb-8 shadow-xl"></div>
-
-      <!-- Links dentro de la carpeta -->
       <div id="folderLinksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
 
@@ -170,7 +164,7 @@
     </div>
   </div>
 
-  <!-- Modal para Agregar / Editar Link (con Carpeta, Color, Tipografía y Tamaño) -->
+  <!-- Modal para Agregar / Editar Link (con Foto/Vista Previa, Carpeta, Color, Letra y Tamaño) -->
   <div id="linkModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
       <div class="flex items-center justify-between mb-4">
@@ -204,9 +198,47 @@
           <input type="text" id="linkDesc" placeholder="Breve detalle del enlace" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
         </div>
 
-        <!-- Personalización visual del Link -->
+        <!-- Foto o Vista Previa del Link -->
+        <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/90 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Foto o Vista Previa del Link</label>
+            <button type="button" onclick="generateLinkPreview()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 text-[11px] font-medium transition">
+              <i data-lucide="sparkles" class="w-3 h-3"></i>
+              <span>Generar vista previa</span>
+            </button>
+          </div>
+
+          <input type="text" id="linkImageUrl" placeholder="URL de imagen o vista previa (opcional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500" />
+
+          <div class="flex items-center justify-between gap-2">
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer transition">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>Subir foto</span>
+              <input type="file" id="linkImageFile" accept="image/*" class="hidden" />
+            </label>
+
+            <div class="flex items-center gap-2">
+              <select id="linkImageSize" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="sm">Foto chica</option>
+                <option value="md" selected>Foto mediana</option>
+                <option value="lg">Foto grande</option>
+              </select>
+              <select id="linkImageFit" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="cover" selected>Llenar</option>
+                <option value="contain">Completa</option>
+              </select>
+              <button type="button" id="clearLinkImageBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar</button>
+            </div>
+          </div>
+
+          <div id="linkPreviewBox" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-900 h-28 relative">
+            <img id="linkPreviewImg" src="" alt="Vista previa del link" class="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        <!-- Personalización visual del Link (Color, Letra y Tamaño) -->
         <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/90 space-y-3">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Estilo visual del link</p>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Color, letra y tamaño</p>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-slate-400 mb-1">Color de tarjeta</label>
@@ -329,7 +361,6 @@
           </div>
         </div>
 
-        <!-- Foto destacada / Portada y ajustes de tamaño -->
         <div class="pt-3 border-t border-slate-800/80 space-y-3">
           <label class="block text-xs font-medium text-slate-400">Foto de portada de la carpeta</label>
           <input type="text" id="sectionCoverUrl" placeholder="Pega URL de imagen (https://...) o sube foto abajo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
@@ -343,7 +374,6 @@
             <button type="button" id="clearCoverBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar foto</button>
           </div>
 
-          <!-- Controles de Tamaño y Encuadre de la Foto -->
           <div class="grid grid-cols-3 gap-2.5 pt-1">
             <div>
               <label class="block text-[11px] font-medium text-slate-400 mb-1">Tamaño / Altura</label>
@@ -373,7 +403,6 @@
             </div>
           </div>
 
-          <!-- Vista previa en vivo con el tamaño y ajuste elegidos -->
           <div id="coverPreviewBox" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-950 h-44 relative transition-all">
             <img id="coverPreviewImg" src="" alt="Vista previa" class="w-full h-full object-cover object-center transition-all" />
           </div>
@@ -509,6 +538,12 @@
       xl: 'text-xl'
     };
 
+    const linkImgSizeMap = {
+      sm: 'h-24',
+      md: 'h-36',
+      lg: 'h-52'
+    };
+
     const coverHeightMap = {
       sm: 'h-32',
       md: 'h-44',
@@ -633,7 +668,6 @@
       pushToGithub(token);
     });
 
-    // --- Navegación entre Inicio y Carpeta Abierta ---
     function openFolder(sectionId) {
       activeFolderId = sectionId;
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -650,7 +684,81 @@
       render();
     }
 
-    // --- Procesar foto de portada y vista previa con tamaño/encuadre ---
+    // --- Foto y vista previa en Links ---
+    function updateLinkPreview(url) {
+      const box = document.getElementById('linkPreviewBox');
+      const img = document.getElementById('linkPreviewImg');
+      const clearBtn = document.getElementById('clearLinkImageBtn');
+      const fitVal = document.getElementById('linkImageFit').value || 'cover';
+
+      if (url) {
+        img.src = url;
+        img.className = `w-full h-full ${fitVal === 'contain' ? 'object-contain p-2 bg-slate-950' : 'object-cover'}`;
+        box.classList.remove('hidden');
+        clearBtn.classList.remove('hidden');
+      } else {
+        img.src = '';
+        box.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      }
+    }
+
+    function generateLinkPreview() {
+      const rawUrl = document.getElementById('linkUrl').value.trim();
+      if (!rawUrl) {
+        alert('Primero escribe o pega la URL del link.');
+        return;
+      }
+      try {
+        const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl);
+        // Usa servicio de captura de vista previa con respaldo automático a favicon HD
+        const previewUrl = `https://image.thum.io/get/width/800/crop/450/${parsed.href}`;
+        document.getElementById('linkImageUrl').value = previewUrl;
+        document.getElementById('linkImageFit').value = 'cover';
+        updateLinkPreview(previewUrl);
+      } catch {
+        alert('Ingresa una URL válida (por ejemplo https://ejemplo.com).');
+      }
+    }
+
+    document.getElementById('linkImageUrl').addEventListener('input', e => {
+      updateLinkPreview(e.target.value.trim());
+    });
+
+    document.getElementById('linkImageFit').addEventListener('change', () => {
+      updateLinkPreview(document.getElementById('linkImageUrl').value.trim());
+    });
+
+    document.getElementById('clearLinkImageBtn').addEventListener('click', () => {
+      document.getElementById('linkImageUrl').value = '';
+      document.getElementById('linkImageFile').value = '';
+      updateLinkPreview('');
+    });
+
+    document.getElementById('linkImageFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 800;
+          const scale = Math.min(1, maxWidth / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          document.getElementById('linkImageUrl').value = compressedDataUrl;
+          updateLinkPreview(compressedDataUrl);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // --- Foto y vista previa en Carpetas ---
     function updateCoverPreview(url) {
       const box = document.getElementById('coverPreviewBox');
       const img = document.getElementById('coverPreviewImg');
@@ -864,6 +972,7 @@
       const select = document.getElementById('linkSection');
       const delBtn = document.getElementById('modalDeleteLinkBtn');
       select.innerHTML = appData.sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      document.getElementById('linkImageFile').value = '';
 
       if (link) {
         document.getElementById('modalTitle').textContent = 'Editar / Mover Link';
@@ -872,22 +981,29 @@
         document.getElementById('linkTitle').value = link.title;
         document.getElementById('linkUrl').value = link.url;
         document.getElementById('linkDesc').value = link.description || '';
+        document.getElementById('linkImageUrl').value = link.imageUrl || '';
+        document.getElementById('linkImageSize').value = link.imageSize || 'md';
+        document.getElementById('linkImageFit').value = link.imageFit || 'cover';
         document.getElementById('linkCardColor').value = link.cardColor || 'inherit';
         document.getElementById('linkTextColor').value = link.textColor || 'white';
         document.getElementById('linkFontFamily').value = link.fontFamily || 'sans';
         document.getElementById('linkFontSize').value = link.fontSize || 'base';
         document.getElementById('linkTags').value = (link.tags || []).join(', ');
         document.getElementById('linkPinned').checked = !!link.pinned;
+        updateLinkPreview(link.imageUrl || '');
         delBtn.classList.remove('hidden');
         delBtn.classList.add('inline-flex');
       } else {
         document.getElementById('modalTitle').textContent = 'Nuevo Link';
         document.getElementById('linkForm').reset();
         document.getElementById('linkId').value = '';
+        document.getElementById('linkImageSize').value = 'md';
+        document.getElementById('linkImageFit').value = 'cover';
         document.getElementById('linkCardColor').value = 'inherit';
         document.getElementById('linkTextColor').value = 'white';
         document.getElementById('linkFontFamily').value = 'sans';
         document.getElementById('linkFontSize').value = 'base';
+        updateLinkPreview('');
         delBtn.classList.add('hidden');
         delBtn.classList.remove('inline-flex');
         if (defaultSectionId) {
@@ -936,7 +1052,6 @@
         <div onclick="openFolder('${section.id}')" 
              class="group relative rounded-3xl bg-slate-900 border border-slate-800 ${theme.hover} overflow-hidden cursor-pointer shadow-lg shadow-black/30 transition-all duration-300 flex flex-col">
           
-          <!-- Botones rápidos siempre accesibles para editar foto/tamaño -->
           <div class="absolute top-3 right-3 z-20 flex items-center gap-1 bg-slate-950/80 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 opacity-90 group-hover:opacity-100 transition">
             ${orderButtons}
             <button onclick="openSectionModalById('${section.id}', event)" class="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-300" title="Editar carpeta, foto o tamaño">
@@ -970,6 +1085,15 @@
       const fontClass = fontFamilyMap[link.fontFamily || 'sans'] || 'font-custom-sans';
       const sizeClass = fontSizeMap[link.fontSize || 'base'] || 'text-base';
 
+      const imgHeightClass = linkImgSizeMap[link.imageSize || 'md'] || 'h-36';
+      const imgFitClass = (link.imageFit === 'contain') ? 'object-contain p-2 bg-slate-950/80' : 'object-cover group-hover:scale-105';
+
+      const linkMediaHtml = link.imageUrl
+        ? `<div class="relative ${imgHeightClass} w-full rounded-xl overflow-hidden border border-slate-800/80 bg-slate-950 mb-3">
+             <img src="${link.imageUrl}" alt="${link.title}" class="w-full h-full ${imgFitClass} transition-transform duration-300" onerror="this.parentElement.classList.add('hidden')" />
+           </div>`
+        : '';
+
       const tagsHtml = (link.tags || [])
         .map(tag => `<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-950/70 border border-slate-800/80 text-slate-400">#${tag}</span>`)
         .join('');
@@ -993,14 +1117,14 @@
       ` : '';
 
       return `
-        <div class="group relative flex flex-col justify-between p-5 rounded-2xl ${theme.cardBg} border ${theme.border} ${theme.hover} transition-all duration-200 ${fontClass}">
+        <div class="group relative flex flex-col justify-between p-4 rounded-2xl ${theme.cardBg} border ${theme.border} ${theme.hover} transition-all duration-200 ${fontClass}">
           <!-- Barra de acciones rápidas en cada link -->
-          <div class="absolute top-3 right-3 z-10 flex items-center gap-1 opacity-85 sm:opacity-0 sm:group-hover:opacity-100 ${editMode ? '!opacity-100' : ''} transition-opacity">
+          <div class="absolute top-3 right-3 z-10 flex items-center gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 ${editMode ? '!opacity-100' : ''} transition-opacity">
             ${orderControls}
             <button onclick="togglePin('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 border border-slate-800 ${link.pinned ? 'text-amber-400' : 'text-slate-400 hover:text-slate-200'}" title="Fijar / Desfijar">
               <i data-lucide="pin" class="w-3.5 h-3.5"></i>
             </button>
-            <button onclick="openLinkModalById('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-sky-500/20 text-sky-400 border border-slate-800" title="Editar, mover carpeta, cambiar color o letra">
+            <button onclick="openLinkModalById('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-sky-500/20 text-sky-400 border border-slate-800" title="Editar foto/vista previa, mover carpeta, cambiar color o letra">
               <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
             </button>
             <button onclick="deleteLink('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-red-500/20 text-red-400 border border-slate-800" title="Borrar link">
@@ -1008,9 +1132,10 @@
             </button>
           </div>
 
-          <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="block flex-1 pr-20">
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="block flex-1">
+            ${linkMediaHtml}
             ${folderPill}
-            <div class="flex items-start gap-2">
+            <div class="flex items-start justify-between gap-2 pr-14">
               <h3 class="font-semibold ${sizeClass} ${textColorClass} group-hover:underline decoration-slate-500/60 underline-offset-4 transition leading-snug">
                 ${link.title}
               </h3>
@@ -1035,7 +1160,6 @@
       searchResultsView.classList.add('hidden');
       emptyState.classList.add('hidden');
 
-      // 1. Modo Búsqueda
       if (query) {
         const matchedLinks = appData.links.filter(link =>
           link.title.toLowerCase().includes(query) ||
@@ -1056,7 +1180,6 @@
         return;
       }
 
-      // 2. Vista Detalle de una Carpeta Abierta
       if (activeFolderId) {
         const section = appData.sections.find(s => s.id === activeFolderId);
         if (!section) {
@@ -1123,7 +1246,6 @@
         return;
       }
 
-      // 3. Vista Inicio: Todas las Carpetas con Fotos + Accesos Fijados
       homeView.classList.remove('hidden');
 
       const pinnedLinks = appData.links.filter(l => l.pinned);
@@ -1210,6 +1332,9 @@
         title: document.getElementById('linkTitle').value.trim(),
         url: document.getElementById('linkUrl').value.trim(),
         description: document.getElementById('linkDesc').value.trim(),
+        imageUrl: document.getElementById('linkImageUrl').value.trim(),
+        imageSize: document.getElementById('linkImageSize').value,
+        imageFit: document.getElementById('linkImageFit').value,
         cardColor: document.getElementById('linkCardColor').value,
         textColor: document.getElementById('linkTextColor').value,
         fontFamily: document.getElementById('linkFontFamily').value,
@@ -1249,7 +1374,6 @@
       setCloudStatus('warn', 'Falta Token (clic aquí)');
     }
 
-    // Carga inicial: siempre prioriza la última versión guardada en GitHub
     fetch(JSON_FILE + '?t=' + Date.now())
       .then(res => {
         if (!res.ok) throw new Error();
