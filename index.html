@@ -40,12 +40,12 @@
   </div>
 
   <!-- Contenido Principal -->
-  <div id="appContent" class="hidden max-w-5xl mx-auto px-4 py-10">
+  <div id="appContent" class="hidden max-w-6xl mx-auto px-4 py-10">
     
     <!-- Encabezado y controles -->
     <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
       <div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
           <!-- Indicador automático de guardado en la nube -->
           <span id="cloudStatusBadge" onclick="openGithubModal()" class="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 transition" title="Clic para configurar o cambiar el Token de GitHub">
@@ -53,16 +53,16 @@
             <span id="cloudStatusText">Sin conectar nube</span>
           </span>
         </div>
-        <p class="text-sm text-slate-400 mt-1">Accesos directos, gestión editorial, INTI y estudio</p>
+        <p class="text-sm text-slate-400 mt-1">Tus carpetas visuales y enlaces siempre sincronizados</p>
       </div>
       
       <div class="flex flex-wrap items-center gap-2.5">
-        <div class="relative w-full sm:w-52">
+        <div class="relative w-full sm:w-56">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="Buscar link o etiqueta..." 
+            placeholder="Buscar link o carpeta..." 
             class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
           />
         </div>
@@ -92,12 +92,12 @@
     <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
       <div class="flex items-center gap-2 text-xs text-amber-300">
         <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-        <span>Modo edición activo: cada carpeta o link que agregues o muevas se guarda automáticamente en GitHub.</span>
+        <span>Modo edición: ordena carpetas o links con las flechas, cambia fotos o mueve cualquier link de carpeta desde su botón de editar (lápiz). Todo se guarda solo en GitHub.</span>
       </div>
       <div class="flex flex-wrap items-center gap-2 shrink-0">
         <button id="syncGithubBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
           <i data-lucide="key" class="w-3.5 h-3.5"></i>
-          <span>Configurar Token GitHub</span>
+          <span>Token GitHub</span>
         </button>
         <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
@@ -106,25 +106,62 @@
       </div>
     </div>
 
-    <!-- Contenedor de Fijados -->
-    <section id="pinnedContainer" class="mb-10 hidden">
-      <div class="flex items-center gap-2 mb-4">
-        <i data-lucide="pin" class="w-4 h-4 text-amber-400"></i>
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Accesos Fijados</h2>
-      </div>
-      <div id="pinnedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </section>
+    <!-- VISTA INICIO: Grilla visual de Carpetas con Fotos -->
+    <div id="homeView">
+      <!-- Accesos Fijados (si existen) -->
+      <section id="pinnedContainer" class="mb-10 hidden">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="pin" class="w-4 h-4 text-amber-400"></i>
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Accesos Fijados</h2>
+        </div>
+        <div id="pinnedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </section>
 
-    <!-- Contenedor Principal de Carpetas / Secciones -->
-    <main id="sectionsContainer" class="space-y-8"></main>
+      <!-- Grilla de Todas las Carpetas -->
+      <section>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-sky-400"></i>
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Mis Carpetas</h2>
+          </div>
+          <span id="foldersCountBadge" class="text-xs text-slate-500"></span>
+        </div>
+        <div id="foldersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+    </div>
+
+    <!-- VISTA DETALLE DE CARPETA ABIERTA -->
+    <div id="folderDetailView" class="hidden">
+      <div class="mb-6">
+        <button onclick="goHome()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-sky-400"></i>
+          <span>Volver a todas las carpetas</span>
+        </button>
+      </div>
+
+      <!-- Cabecera visual de la carpeta abierta -->
+      <div id="folderDetailHeader" class="rounded-3xl bg-slate-900/70 border border-slate-800 overflow-hidden mb-8 shadow-xl"></div>
+
+      <!-- Links dentro de la carpeta -->
+      <div id="folderLinksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- VISTA DE BÚSQUEDA GLOBAL -->
+    <div id="searchResultsView" class="hidden space-y-8">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Resultados de búsqueda</h2>
+        <button onclick="clearSearch()" class="text-xs text-sky-400 hover:underline">Limpiar búsqueda</button>
+      </div>
+      <div id="searchLinksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
 
     <!-- Mensaje sin resultados -->
     <div id="emptyState" class="hidden text-center py-16 text-slate-500">
-      No se encontraron enlaces que coincidan con tu búsqueda.
+      No se encontraron carpetas ni enlaces que coincidan con tu búsqueda.
     </div>
   </div>
 
-  <!-- Modal para Agregar / Editar Link -->
+  <!-- Modal para Agregar / Editar Link (con selector de Carpeta para reagrupar) -->
   <div id="linkModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-4">
@@ -138,7 +175,7 @@
         <input type="hidden" id="linkId" />
         
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Carpeta</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Carpeta destino</label>
           <select id="linkSection" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500"></select>
         </div>
 
@@ -164,7 +201,7 @@
 
         <label class="flex items-center gap-2 cursor-pointer pt-1">
           <input type="checkbox" id="linkPinned" class="rounded bg-slate-950 border-slate-700 text-sky-500 focus:ring-0" />
-          <span class="text-sm text-slate-300">Fijar en "Accesos Fijados" arriba</span>
+          <span class="text-sm text-slate-300">Fijar también en el inicio arriba</span>
         </label>
 
         <div class="flex justify-end gap-2 pt-4 border-t border-slate-800">
@@ -190,12 +227,12 @@
         
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de la carpeta</label>
-          <input type="text" id="sectionName" required placeholder="Ej: Teatro y Prensa, Finanzas, IA..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+          <input type="text" id="sectionName" required placeholder="Ej: Vive CABA, Facultad, Teatro..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Color</label>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Color de acento</label>
             <select id="sectionColor" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
               <option value="sky">Celeste (Sky)</option>
               <option value="indigo">Índigo</option>
@@ -226,19 +263,19 @@
 
         <!-- Foto destacada / Portada -->
         <div class="pt-1 border-t border-slate-800/80">
-          <label class="block text-xs font-medium text-slate-400 mb-1.5">Foto destacada de portada (opcional)</label>
-          <input type="text" id="sectionCoverUrl" placeholder="Pega URL de imagen (https://...) o sube archivo abajo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 mb-2" />
+          <label class="block text-xs font-medium text-slate-400 mb-1.5">Foto de portada de la carpeta</label>
+          <input type="text" id="sectionCoverUrl" placeholder="Pega URL de imagen (https://...) o sube foto abajo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 mb-2" />
           
           <div class="flex items-center justify-between gap-2">
             <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer transition">
               <i data-lucide="image-plus" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>Subir foto desde PC/Celular</span>
+              <span>Elegir foto desde PC / Celular</span>
               <input type="file" id="sectionCoverFile" accept="image/*" class="hidden" />
             </label>
             <button type="button" id="clearCoverBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar foto</button>
           </div>
 
-          <div id="coverPreviewBox" class="mt-2.5 hidden rounded-xl overflow-hidden border border-slate-800 h-24 relative">
+          <div id="coverPreviewBox" class="mt-2.5 hidden rounded-xl overflow-hidden border border-slate-800 h-28 relative">
             <img id="coverPreviewImg" src="" alt="Vista previa" class="w-full h-full object-cover" />
           </div>
         </div>
@@ -255,17 +292,17 @@
   <div id="githubModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-bold text-white">Activar guardado automático</h3>
+        <h3 class="text-lg font-bold text-white">Guardado automático en GitHub</h3>
         <button type="button" onclick="closeGithubModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
       <p class="text-xs text-slate-400 leading-relaxed mb-4">
-        Pega tu <strong>Token de GitHub</strong> una única vez en este navegador. A partir de ahora, cada carpeta o link que crees se guardará solo en la nube sin tener que hacer nada más.
+        Pega tu <strong>Token de GitHub</strong> una única vez en este navegador. Cada carpeta, foto o link que agregues o muevas se guardará automáticamente en la nube.
       </p>
       <form id="githubForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">GitHub Token (ghp_... o github_pat_...)</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">GitHub Token (github_pat_... o ghp_...)</label>
           <input type="password" id="githubTokenInput" required placeholder="github_pat_..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
@@ -286,8 +323,8 @@
     const JSON_FILE    = "central-de-links-2026-11-25.json";
     // ==========================================
 
-    const STORAGE_KEY = 'central_links_personal_v3';
-    const AUTH_KEY    = 'central_links_unlocked_v3';
+    const STORAGE_KEY = 'central_links_personal_v4';
+    const AUTH_KEY    = 'central_links_unlocked_v4';
     const TOKEN_KEY   = 'central_links_gh_token';
 
     function setCloudStatus(state, text) {
@@ -335,19 +372,18 @@
     document.getElementById('lockBtn').addEventListener('click', lockApp);
 
     const colorMap = {
-      sky: { badge: 'bg-sky-500/10 text-sky-400 border-sky-500/20', hover: 'hover:border-sky-500/50', icon: 'text-sky-400', border: 'border-sky-500/20' },
-      indigo: { badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', hover: 'hover:border-indigo-500/50', icon: 'text-indigo-400', border: 'border-indigo-500/20' },
-      emerald: { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', hover: 'hover:border-emerald-500/50', icon: 'text-emerald-400', border: 'border-emerald-500/20' },
-      amber: { badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20', hover: 'hover:border-amber-500/50', icon: 'text-amber-400', border: 'border-amber-500/20' },
-      rose: { badge: 'bg-rose-500/10 text-rose-400 border-rose-500/20', hover: 'hover:border-rose-500/50', icon: 'text-rose-400', border: 'border-rose-500/20' },
-      violet: { badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20', hover: 'hover:border-violet-500/50', icon: 'text-violet-400', border: 'border-violet-500/20' },
-      slate: { badge: 'bg-slate-500/10 text-slate-300 border-slate-500/20', hover: 'hover:border-slate-500/50', icon: 'text-slate-300', border: 'border-slate-800' }
+      sky: { badge: 'bg-sky-500/20 text-sky-300 border-sky-500/30', gradient: 'from-sky-900/60 via-slate-900 to-slate-950', hover: 'hover:border-sky-500/60', icon: 'text-sky-400', border: 'border-sky-500/25' },
+      indigo: { badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', gradient: 'from-indigo-900/60 via-slate-900 to-slate-950', hover: 'hover:border-indigo-500/60', icon: 'text-indigo-400', border: 'border-indigo-500/25' },
+      emerald: { badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', gradient: 'from-emerald-900/60 via-slate-900 to-slate-950', hover: 'hover:border-emerald-500/60', icon: 'text-emerald-400', border: 'border-emerald-500/25' },
+      amber: { badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30', gradient: 'from-amber-900/60 via-slate-900 to-slate-950', hover: 'hover:border-amber-500/60', icon: 'text-amber-400', border: 'border-amber-500/25' },
+      rose: { badge: 'bg-rose-500/20 text-rose-300 border-rose-500/30', gradient: 'from-rose-900/60 via-slate-900 to-slate-950', hover: 'hover:border-rose-500/60', icon: 'text-rose-400', border: 'border-rose-500/25' },
+      violet: { badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30', gradient: 'from-violet-900/60 via-slate-900 to-slate-950', hover: 'hover:border-violet-500/60', icon: 'text-violet-400', border: 'border-violet-500/25' },
+      slate: { badge: 'bg-slate-500/20 text-slate-300 border-slate-500/30', gradient: 'from-slate-800/70 via-slate-900 to-slate-950', hover: 'hover:border-slate-500/60', icon: 'text-slate-300', border: 'border-slate-800' }
     };
 
     let appData = { sections: [], links: [] };
-    let collapsedSections = {};
+    let activeFolderId = null; // null = Inicio con todas las carpetas | 'sec-...' = Carpeta abierta
     let editMode = false;
-    let draggedLinkId = null;
     let isSyncing = false;
     let pendingSync = false;
 
@@ -450,6 +486,23 @@
       pushToGithub(token);
     });
 
+    // --- Navegación entre Inicio y Carpeta Abierta ---
+    function openFolder(sectionId) {
+      activeFolderId = sectionId;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      render();
+    }
+
+    function goHome() {
+      activeFolderId = null;
+      render();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      render();
+    }
+
     // --- Procesar y comprimir foto de portada ---
     function updateCoverPreview(url) {
       const box = document.getElementById('coverPreviewBox');
@@ -500,24 +553,20 @@
     });
 
     // --- Gestión de Carpetas ---
-    function toggleCollapse(sectionId) {
-      if (editMode) return;
-      collapsedSections[sectionId] = !collapsedSections[sectionId];
-      render(document.getElementById('searchInput').value);
-    }
-
-    function moveSection(sectionId, direction) {
+    function moveSection(sectionId, direction, event) {
+      if (event) event.stopPropagation();
       const idx = appData.sections.findIndex(s => s.id === sectionId);
       const targetIdx = idx + direction;
       if (idx === -1 || targetIdx < 0 || targetIdx >= appData.sections.length) return;
       const temp = appData.sections[idx];
       appData.sections[idx] = appData.sections[targetIdx];
       appData.sections[targetIdx] = temp;
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     }
 
-    function deleteSection(sectionId) {
+    function deleteSection(sectionId, event) {
+      if (event) event.stopPropagation();
       const sec = appData.sections.find(s => s.id === sectionId);
       if (!sec) return;
       const count = appData.links.filter(l => l.sectionId === sectionId).length;
@@ -527,11 +576,13 @@
       if (!confirm(msg)) return;
       appData.sections = appData.sections.filter(s => s.id !== sectionId);
       appData.links = appData.links.filter(l => l.sectionId !== sectionId);
-      render(document.getElementById('searchInput').value);
+      if (activeFolderId === sectionId) activeFolderId = null;
+      render();
       persistChanges();
     }
 
-    function openSectionModal(section = null) {
+    function openSectionModal(section = null, event = null) {
+      if (event) event.stopPropagation();
       const modal = document.getElementById('sectionModal');
       document.getElementById('sectionCoverFile').value = '';
       if (section) {
@@ -573,7 +624,7 @@
       const temp = appData.links[idx];
       appData.links[idx] = appData.links[targetIdx];
       appData.links[targetIdx] = temp;
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     }
 
@@ -581,14 +632,14 @@
       const link = appData.links.find(l => l.id === linkId);
       if (!link) return;
       link.pinned = !link.pinned;
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     }
 
     function deleteLink(linkId) {
       if (!confirm('¿Eliminar este enlace?')) return;
       appData.links = appData.links.filter(l => l.id !== linkId);
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     }
 
@@ -603,7 +654,7 @@
       select.innerHTML = appData.sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
       if (link) {
-        document.getElementById('modalTitle').textContent = 'Editar Link';
+        document.getElementById('modalTitle').textContent = 'Editar / Reagrupar Link';
         document.getElementById('linkId').value = link.id;
         select.value = link.sectionId;
         document.getElementById('linkTitle').value = link.title;
@@ -615,7 +666,11 @@
         document.getElementById('modalTitle').textContent = 'Nuevo Link';
         document.getElementById('linkForm').reset();
         document.getElementById('linkId').value = '';
-        if (defaultSectionId) select.value = defaultSectionId;
+        if (defaultSectionId) {
+          select.value = defaultSectionId;
+        } else if (activeFolderId) {
+          select.value = activeFolderId;
+        }
       }
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -627,17 +682,77 @@
       modal.classList.remove('flex');
     }
 
-    function createCard(link, sectionColor, isPinnedSection = false) {
+    function createFolderCard(section) {
+      const theme = colorMap[section.color] || colorMap.slate;
+      const count = appData.links.filter(l => l.sectionId === section.id).length;
+      const safeSecJson = JSON.stringify(section).replace(/'/g, "&#39;");
+
+      const visualHeader = section.coverImage
+        ? `<img src="${section.coverImage}" alt="${section.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />`
+        : `<div class="w-full h-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center">
+             <i data-lucide="${section.icon || 'folder'}" class="w-12 h-12 ${theme.icon} opacity-60 group-hover:scale-110 transition-transform duration-300"></i>
+           </div>`;
+
+      const editControls = editMode ? `
+        <div class="absolute top-3 right-3 z-20 flex items-center gap-1 bg-slate-950/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/80">
+          <button onclick="moveSection('${section.id}', -1, event)" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300" title="Mover antes">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="moveSection('${section.id}', 1, event)" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300" title="Mover después">
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick='openSectionModal(${safeSecJson}, event)' class="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-300" title="Cambiar foto o nombre">
+            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+          </button>
+          <button onclick="deleteSection('${section.id}', event)" class="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/35 text-red-400" title="Eliminar carpeta">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      ` : '';
+
+      return `
+        <div onclick="openFolder('${section.id}')" 
+             class="group relative rounded-3xl bg-slate-900 border border-slate-800 ${theme.hover} overflow-hidden cursor-pointer shadow-lg shadow-black/30 transition-all duration-300 flex flex-col">
+          ${editControls}
+          <div class="relative h-44 w-full overflow-hidden bg-slate-950">
+            ${visualHeader}
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent"></div>
+            <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="p-2 rounded-xl border backdrop-blur-md ${theme.badge} shrink-0">
+                  <i data-lucide="${section.icon || 'folder'}" class="w-4 h-4"></i>
+                </span>
+                <h3 class="text-lg font-bold text-white truncate drop-shadow">${section.name}</h3>
+              </div>
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-950/80 border border-slate-700/80 text-slate-200 shrink-0">
+                ${count} ${count === 1 ? 'link' : 'links'}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createLinkCard(link, sectionColor, showFolderBadge = false) {
       const theme = colorMap[sectionColor] || colorMap.slate;
       const tagsHtml = (link.tags || [])
         .map(tag => `<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-400">#${tag}</span>`)
         .join('');
 
+      const sec = appData.sections.find(s => s.id === link.sectionId);
+      const folderPill = (showFolderBadge && sec)
+        ? `<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md border ${theme.badge} mb-2">
+             <i data-lucide="${sec.icon || 'folder'}" class="w-3 h-3"></i>
+             ${sec.name}
+           </span>`
+        : '';
+
       if (!editMode) {
         return `
           <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-             class="group flex flex-col justify-between p-4 rounded-2xl bg-slate-950/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
+             class="group flex flex-col justify-between p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 ${theme.hover} hover:bg-slate-900 transition-all duration-200">
             <div>
+              ${folderPill}
               <div class="flex items-start justify-between gap-2">
                 <h3 class="font-semibold text-slate-100 group-hover:text-white transition">${link.title}</h3>
                 <i data-lucide="external-link" class="w-4 h-4 text-slate-500 group-hover:text-slate-300 shrink-0 mt-0.5 transition"></i>
@@ -651,19 +766,18 @@
 
       const safeLinkJson = JSON.stringify(link).replace(/'/g, "&#39;");
       return `
-        <div draggable="${!isPinnedSection}" data-link-id="${link.id}" data-section-id="${link.sectionId}"
-             class="edit-card flex flex-col justify-between p-4 rounded-2xl bg-slate-950 border border-dashed border-slate-700 hover:border-amber-500/50 transition-all cursor-move">
+        <div class="flex flex-col justify-between p-5 rounded-2xl bg-slate-900 border border-dashed border-slate-700 hover:border-amber-500/50 transition-all">
           <div>
+            ${folderPill}
             <div class="flex items-start justify-between gap-2">
               <h3 class="font-semibold text-slate-100">${link.title}</h3>
-              <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Arrastrar</span>
             </div>
             <p class="text-xs text-slate-400 mt-1 line-clamp-1">${link.url}</p>
           </div>
           
           <div class="flex items-center justify-between gap-1 mt-4 pt-3 border-t border-slate-800">
             <div class="flex items-center gap-1">
-              ${!isPinnedSection ? `
+              ${!showFolderBadge ? `
                 <button onclick="moveLink('${link.id}', -1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Mover antes">
                   <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                 </button>
@@ -671,13 +785,14 @@
                   <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </button>
               ` : ''}
-              <button onclick="togglePin('${link.id}')" class="p-1.5 rounded-lg ${link.pinned ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}" title="Fijar / Desfijar">
+              <button onclick="togglePin('${link.id}')" class="p-1.5 rounded-lg ${link.pinned ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}" title="Fijar / Desfijar en inicio">
                 <i data-lucide="pin" class="w-3.5 h-3.5"></i>
               </button>
             </div>
             <div class="flex items-center gap-1">
-              <button onclick='openLinkModal(${safeLinkJson})' class="p-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/30 text-sky-400" title="Editar link">
+              <button onclick='openLinkModal(${safeLinkJson})' class="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/30 text-sky-400 text-xs" title="Editar o mover a otra carpeta">
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                <span>Editar / Mover</span>
               </button>
               <button onclick="deleteLink('${link.id}')" class="p-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400" title="Eliminar link">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -688,161 +803,137 @@
       `;
     }
 
-    function attachDragEvents() {
-      if (!editMode) return;
-      document.querySelectorAll('.edit-card[draggable="true"]').forEach(card => {
-        card.addEventListener('dragstart', () => {
-          draggedLinkId = card.dataset.linkId;
-          card.classList.add('opacity-50');
-        });
-        card.addEventListener('dragend', () => {
-          draggedLinkId = null;
-          card.classList.remove('opacity-50');
-        });
-        card.addEventListener('dragover', e => e.preventDefault());
-        card.addEventListener('drop', e => {
-          e.preventDefault();
-          const targetId = card.dataset.linkId;
-          if (!draggedLinkId || draggedLinkId === targetId) return;
-          const fromIdx = appData.links.findIndex(l => l.id === draggedLinkId);
-          const toIdx = appData.links.findIndex(l => l.id === targetId);
-          if (fromIdx === -1 || toIdx === -1) return;
-          appData.links[fromIdx].sectionId = appData.links[toIdx].sectionId;
-          const [movedItem] = appData.links.splice(fromIdx, 1);
-          appData.links.splice(toIdx, 0, movedItem);
-          render(document.getElementById('searchInput').value);
-          persistChanges();
-        });
-      });
-
-      document.querySelectorAll('[data-drop-section]').forEach(zone => {
-        zone.addEventListener('dragover', e => e.preventDefault());
-        zone.addEventListener('drop', e => {
-          e.preventDefault();
-          const targetSectionId = zone.dataset.dropSection;
-          if (!draggedLinkId || !targetSectionId) return;
-          const link = appData.links.find(l => l.id === draggedLinkId);
-          if (link) {
-            link.sectionId = targetSectionId;
-            render(document.getElementById('searchInput').value);
-            persistChanges();
-          }
-        });
-      });
-    }
-
-    function render(filterText = '') {
-      const query = filterText.toLowerCase().trim();
-      const sectionsContainer = document.getElementById('sectionsContainer');
-      const pinnedContainer = document.getElementById('pinnedContainer');
-      const pinnedGrid = document.getElementById('pinnedGrid');
+    function render() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const homeView = document.getElementById('homeView');
+      const folderDetailView = document.getElementById('folderDetailView');
+      const searchResultsView = document.getElementById('searchResultsView');
       const emptyState = document.getElementById('emptyState');
 
-      sectionsContainer.innerHTML = '';
-      pinnedGrid.innerHTML = '';
+      homeView.classList.add('hidden');
+      folderDetailView.classList.add('hidden');
+      searchResultsView.classList.add('hidden');
+      emptyState.classList.add('hidden');
 
-      const filteredLinks = appData.links.filter(link => {
-        if (!query) return true;
-        return link.title.toLowerCase().includes(query) ||
-               (link.description || '').toLowerCase().includes(query) ||
-               (link.tags || []).some(t => t.toLowerCase().includes(query));
-      });
+      // 1. Modo Búsqueda
+      if (query) {
+        const matchedLinks = appData.links.filter(link =>
+          link.title.toLowerCase().includes(query) ||
+          (link.description || '').toLowerCase().includes(query) ||
+          (link.tags || []).some(t => t.toLowerCase().includes(query))
+        );
 
-      if (filteredLinks.length === 0 && !editMode && appData.sections.length === 0) {
-        pinnedContainer.classList.add('hidden');
-        emptyState.classList.remove('hidden');
+        if (matchedLinks.length === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          searchResultsView.classList.remove('hidden');
+          document.getElementById('searchLinksGrid').innerHTML = matchedLinks.map(link => {
+            const sec = appData.sections.find(s => s.id === link.sectionId);
+            return createLinkCard(link, sec ? sec.color : 'slate', true);
+          }).join('');
+        }
         lucide.createIcons();
         return;
       }
 
-      emptyState.classList.add('hidden');
+      // 2. Vista Detalle de una Carpeta Abierta
+      if (activeFolderId) {
+        const section = appData.sections.find(s => s.id === activeFolderId);
+        if (!section) {
+          activeFolderId = null;
+          render();
+          return;
+        }
 
-      const pinnedLinks = filteredLinks.filter(l => l.pinned);
-      if (pinnedLinks.length > 0 && !query) {
+        folderDetailView.classList.remove('hidden');
+        const theme = colorMap[section.color] || colorMap.slate;
+        const safeSecJson = JSON.stringify(section).replace(/'/g, "&#39;");
+        const secLinks = appData.links.filter(l => l.sectionId === section.id);
+
+        const bannerHtml = section.coverImage
+          ? `<div class="relative h-44 sm:h-56 w-full overflow-hidden">
+               <img src="${section.coverImage}" alt="${section.name}" class="w-full h-full object-cover" />
+               <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent"></div>
+             </div>`
+          : `<div class="h-24 w-full bg-gradient-to-r ${theme.gradient}"></div>`;
+
+        document.getElementById('folderDetailHeader').innerHTML = `
+          ${bannerHtml}
+          <div class="p-6 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-3 rounded-2xl border ${theme.badge}">
+                <i data-lucide="${section.icon || 'folder'}" class="w-6 h-6"></i>
+              </span>
+              <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-white">${section.name}</h2>
+                <p class="text-xs text-slate-400 mt-0.5">${secLinks.length} ${secLinks.length === 1 ? 'enlace guardado' : 'enlaces guardados'}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick='openSectionModal(${safeSecJson})' class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Editar carpeta / foto</span>
+              </button>
+              <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Agregar link aquí</span>
+              </button>
+            </div>
+          </div>
+        `;
+
+        const linksGrid = document.getElementById('folderLinksGrid');
+        if (secLinks.length === 0) {
+          linksGrid.innerHTML = `
+            <div class="col-span-full p-12 rounded-3xl border border-dashed border-slate-800 text-center">
+              <p class="text-sm text-slate-400 mb-3">Esta carpeta todavía no tiene enlaces.</p>
+              <button onclick="openLinkModal(null, '${section.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Agregar primer link</span>
+              </button>
+            </div>
+          `;
+        } else {
+          linksGrid.innerHTML = secLinks.map(link => createLinkCard(link, section.color, false)).join('');
+        }
+
+        lucide.createIcons();
+        return;
+      }
+
+      // 3. Vista Inicio: Todas las Carpetas con Fotos + Accesos Fijados
+      homeView.classList.remove('hidden');
+
+      const pinnedLinks = appData.links.filter(l => l.pinned);
+      const pinnedContainer = document.getElementById('pinnedContainer');
+      if (pinnedLinks.length > 0) {
         pinnedContainer.classList.remove('hidden');
-        pinnedGrid.innerHTML = pinnedLinks.map(link => {
+        document.getElementById('pinnedGrid').innerHTML = pinnedLinks.map(link => {
           const sec = appData.sections.find(s => s.id === link.sectionId);
-          return createCard(link, sec ? sec.color : 'slate', true);
+          return createLinkCard(link, sec ? sec.color : 'slate', true);
         }).join('');
       } else {
         pinnedContainer.classList.add('hidden');
       }
 
-      appData.sections.forEach(section => {
-        const secLinks = filteredLinks.filter(l => l.sectionId === section.id);
-        if (secLinks.length === 0 && query) return;
+      const foldersGrid = document.getElementById('foldersGrid');
+      document.getElementById('foldersCountBadge').textContent = `${appData.sections.length} carpetas`;
 
-        const theme = colorMap[section.color] || colorMap.slate;
-        const safeSecJson = JSON.stringify(section).replace(/'/g, "&#39;");
-        const isCollapsed = !!collapsedSections[section.id] && !query && !editMode;
-
-        const coverBannerHtml = section.coverImage ? `
-          <div class="relative h-32 sm:h-40 w-full overflow-hidden border-b border-slate-800/80">
-            <img src="${section.coverImage}" alt="${section.name}" class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-          </div>
-        ` : '';
-
-        const sectionControls = editMode ? `
-          <div class="flex flex-wrap items-center gap-1 ml-auto">
-            <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-sky-500/15 hover:bg-sky-500/30 text-sky-400 mr-1" title="Agregar link en esta carpeta">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Link</span>
-            </button>
-            <button onclick="moveSection('${section.id}', -1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Subir carpeta">
-              <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="moveSection('${section.id}', 1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="Bajar carpeta">
-              <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick='openSectionModal(${safeSecJson})' class="p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-amber-400" title="Editar nombre, color o foto">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="deleteSection('${section.id}')" class="p-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/30 text-red-400" title="Eliminar carpeta">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        ` : `
-          <div class="flex items-center gap-1 ml-auto">
-            <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-slate-400 hover:text-sky-400 hover:bg-slate-800/70 transition" title="Agregar link aquí">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="toggleCollapse('${section.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition" title="${isCollapsed ? 'Expandir carpeta' : 'Minimizar carpeta'}">
-              <i data-lucide="${isCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4"></i>
+      if (appData.sections.length === 0) {
+        foldersGrid.innerHTML = `
+          <div class="col-span-full p-12 rounded-3xl border border-dashed border-slate-800 text-center">
+            <p class="text-sm text-slate-400 mb-3">Aún no creaste ninguna carpeta.</p>
+            <button onclick="openSectionModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+              <i data-lucide="folder-plus" class="w-4 h-4"></i>
+              <span>Crear primera carpeta</span>
             </button>
           </div>
         `;
-
-        const emptyFolderHint = (secLinks.length === 0)
-          ? `<div data-drop-section="${section.id}" class="col-span-full p-5 rounded-xl border border-dashed border-slate-800 text-xs text-slate-500 text-center">Carpeta vacía — haz clic en <strong>+</strong> para agregar un enlace aquí.</div>`
-          : '';
-
-        const sectionEl = document.createElement('section');
-        sectionEl.className = `rounded-3xl bg-slate-900/50 border ${theme.border} overflow-hidden shadow-lg shadow-black/20`;
-        sectionEl.innerHTML = `
-          ${coverBannerHtml}
-          <div class="p-5 sm:p-6">
-            <div class="flex flex-wrap items-center gap-2.5 ${isCollapsed ? '' : 'mb-5'}">
-              <span class="p-2 rounded-xl border ${theme.badge}">
-                <i data-lucide="${section.icon || 'folder'}" class="w-4 h-4 ${theme.icon}"></i>
-              </span>
-              <h2 onclick="toggleCollapse('${section.id}')" class="text-base sm:text-lg font-semibold text-slate-100 cursor-pointer hover:text-white">${section.name}</h2>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">${secLinks.length}</span>
-              ${sectionControls}
-            </div>
-            ${isCollapsed ? '' : `
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${secLinks.map(link => createCard(link, section.color, false)).join('')}
-                ${emptyFolderHint}
-              </div>
-            `}
-          </div>
-        `;
-        sectionsContainer.appendChild(sectionEl);
-      });
+      } else {
+        foldersGrid.innerHTML = appData.sections.map(sec => createFolderCard(sec)).join('');
+      }
 
       lucide.createIcons();
-      attachDragEvents();
     }
 
     document.getElementById('toggleEditBtn').addEventListener('click', () => {
@@ -856,7 +947,7 @@
         toolbar.classList.add('hidden');
         btnText.textContent = 'Editar';
       }
-      render(document.getElementById('searchInput').value);
+      render();
     });
 
     document.getElementById('addSectionBtn').addEventListener('click', () => openSectionModal());
@@ -879,7 +970,7 @@
         appData.sections.push(secObj);
       }
       closeSectionModal();
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     });
 
@@ -904,7 +995,7 @@
         appData.links.push(linkObj);
       }
       closeLinkModal();
-      render(document.getElementById('searchInput').value);
+      render();
       persistChanges();
     });
 
@@ -919,7 +1010,7 @@
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById('searchInput').addEventListener('input', e => render(e.target.value));
+    document.getElementById('searchInput').addEventListener('input', () => render());
 
     lucide.createIcons();
 
