@@ -18,12 +18,6 @@
       "coverPos": "center"
     },
     {
-      "id": "sec-ies",
-      "name": "Profesorado (IES N.° 1)",
-      "color": "emerald",
-      "icon": "graduation-cap"
-    },
-    {
       "id": "sec-personal",
       "name": "Personal",
       "color": "slate",
@@ -32,6 +26,12 @@
       "coverSize": "md",
       "coverFit": "cover",
       "coverPos": "center"
+    },
+    {
+      "id": "sec-ies",
+      "name": "Profesorado (IES N.° 1)",
+      "color": "emerald",
+      "icon": "graduation-cap"
     },
     {
       "id": "sec-1795627901891",
