@@ -236,6 +236,15 @@
       "description": "billetera virtual",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795627799211",
+      "sectionId": "sec-personal",
+      "title": "Test politico",
+      "url": "https://testpolitico.pages.dev/rapido/?ref=SVWYXTE8",
+      "description": "",
+      "tags": [],
+      "pinned": false
     }
   ]
 }
