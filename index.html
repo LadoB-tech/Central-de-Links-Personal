@@ -45,7 +45,14 @@
     <!-- Encabezado y controles -->
     <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
+          <!-- Indicador automático de guardado en la nube -->
+          <span id="cloudStatusBadge" onclick="openGithubModal()" class="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 transition" title="Clic para configurar o cambiar el Token de GitHub">
+            <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span id="cloudStatusText">Sin conectar nube</span>
+          </span>
+        </div>
         <p class="text-sm text-slate-400 mt-1">Accesos directos, gestión editorial, INTI y estudio</p>
       </div>
       
@@ -81,23 +88,20 @@
       </div>
     </header>
 
-    <!-- Barra de herramientas de edición y sincronización -->
+    <!-- Barra de herramientas de edición -->
     <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
       <div class="flex items-center gap-2 text-xs text-amber-300">
         <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-        <span>Modo edición: ordena carpetas (↑/↓) o links (←/→ o arrastrando entre carpetas), agrega fotos de portada y guarda en la nube.</span>
+        <span>Modo edición activo: cada carpeta o link que agregues o muevas se guarda automáticamente en GitHub.</span>
       </div>
       <div class="flex flex-wrap items-center gap-2 shrink-0">
-        <button id="syncGithubBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition shadow-lg shadow-sky-900/30">
-          <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i>
-          <span id="syncGithubText">Guardar en GitHub (Nube)</span>
+        <button id="syncGithubBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
+          <i data-lucide="key" class="w-3.5 h-3.5"></i>
+          <span>Configurar Token GitHub</span>
         </button>
         <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Bajar JSON</span>
-        </button>
-        <button id="resetBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-400 border border-slate-700 transition">
-          Recargar de GitHub
+          <span>Respaldo JSON</span>
         </button>
       </div>
     </div>
@@ -247,17 +251,17 @@
     </div>
   </div>
 
-  <!-- Modal Token de GitHub para Guardar en la Nube -->
+  <!-- Modal Token de GitHub para Guardado Automático -->
   <div id="githubModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-bold text-white">Conectar guardado en GitHub</h3>
+        <h3 class="text-lg font-bold text-white">Activar guardado automático</h3>
         <button type="button" onclick="closeGithubModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
       <p class="text-xs text-slate-400 leading-relaxed mb-4">
-        Para que tus carpetas, fotos y links se guarden automáticamente en GitHub y se vean en todos tus dispositivos, pega tu <strong>Personal Access Token</strong> (se guarda solo en este dispositivo).
+        Pega tu <strong>Token de GitHub</strong> una única vez en este navegador. A partir de ahora, cada carpeta o link que crees se guardará solo en la nube sin tener que hacer nada más.
       </p>
       <form id="githubForm" class="space-y-4">
         <div>
@@ -266,7 +270,7 @@
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="closeGithubModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar y Sincronizar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Activar y Guardar</button>
         </div>
       </form>
     </div>
@@ -282,9 +286,20 @@
     const JSON_FILE    = "central-de-links-2026-11-25.json";
     // ==========================================
 
-    const STORAGE_KEY = 'central_links_personal_v2';
-    const AUTH_KEY    = 'central_links_unlocked_v2';
+    const STORAGE_KEY = 'central_links_personal_v3';
+    const AUTH_KEY    = 'central_links_unlocked_v3';
     const TOKEN_KEY   = 'central_links_gh_token';
+
+    function setCloudStatus(state, text) {
+      const dot = document.getElementById('cloudStatusDot');
+      const label = document.getElementById('cloudStatusText');
+      label.textContent = text;
+      dot.className = 'w-2 h-2 rounded-full ' + (
+        state === 'ok' ? 'bg-emerald-400' :
+        state === 'saving' ? 'bg-sky-400 animate-ping' :
+        state === 'error' ? 'bg-red-400' : 'bg-amber-400'
+      );
+    }
 
     function unlockApp(persist = false) {
       document.getElementById('lockScreen').classList.add('hidden');
@@ -307,7 +322,7 @@
 
     document.getElementById('unlockForm').addEventListener('submit', e => {
       e.preventDefault();
-      const input = document.getElementById('passwordInput').value;
+      const input = document.getElementById('passwordInput').value.trim();
       const remember = document.getElementById('rememberDevice').checked;
       if (input === CLAVE_ACCESO) {
         document.getElementById('lockError').classList.add('hidden');
@@ -333,20 +348,32 @@
     let collapsedSections = {};
     let editMode = false;
     let draggedLinkId = null;
+    let isSyncing = false;
+    let pendingSync = false;
 
-    function saveToLocal() {
+    // Guardado unificado: local + automático en GitHub
+    async function persistChanges() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (!token) {
+        setCloudStatus('warn', 'Falta Token (clic aquí)');
+        openGithubModal();
+        return;
+      }
+      await pushToGithub(token);
     }
 
-    // --- Sincronización directa con GitHub API ---
     async function pushToGithub(token) {
-      const btnText = document.getElementById('syncGithubText');
-      btnText.textContent = 'Guardando...';
+      if (isSyncing) {
+        pendingSync = true;
+        return;
+      }
+      isSyncing = true;
+      setCloudStatus('saving', 'Guardando en nube...');
       const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${JSON_FILE}`;
 
       try {
-        // 1. Obtener el SHA actual del archivo en GitHub
-        const getRes = await fetch(apiUrl, {
+        const getRes = await fetch(apiUrl + '?t=' + Date.now(), {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.github+json'
@@ -357,14 +384,15 @@
         if (getRes.ok) {
           const fileInfo = await getRes.json();
           sha = fileInfo.sha;
+        } else if (getRes.status === 401 || getRes.status === 403) {
+          throw new Error('Token inválido o sin permiso Contents: Read & Write');
         }
 
-        // 2. Codificar JSON en Base64 soportando tildes y eñes
         const jsonString = JSON.stringify(appData, null, 2);
         const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
         const body = {
-          message: 'Actualiza carpetas y links desde la web',
+          message: 'Actualización automática desde Central de Links',
           content: base64Content
         };
         if (sha) body.sha = sha;
@@ -384,13 +412,26 @@
           throw new Error(errData.message || 'Error al guardar en GitHub');
         }
 
-        btnText.textContent = '¡Guardado en Nube!';
-        setTimeout(() => { btnText.textContent = 'Guardar en GitHub (Nube)'; }, 3000);
+        setCloudStatus('ok', 'Guardado en nube');
       } catch (err) {
-        btnText.textContent = 'Guardar en GitHub (Nube)';
-        alert('No se pudo guardar en GitHub: ' + err.message + '\nVerifica que el Token tenga permisos de escritura en el repositorio.');
-        localStorage.removeItem(TOKEN_KEY);
+        setCloudStatus('error', 'Error al guardar');
+        alert('No se pudo guardar en GitHub: ' + err.message);
+        if (err.message.includes('Token')) {
+          localStorage.removeItem(TOKEN_KEY);
+          openGithubModal();
+        }
+      } finally {
+        isSyncing = false;
+        if (pendingSync) {
+          pendingSync = false;
+          pushToGithub(token);
+        }
       }
+    }
+
+    function openGithubModal() {
+      document.getElementById('githubModal').classList.remove('hidden');
+      document.getElementById('githubModal').classList.add('flex');
     }
 
     function closeGithubModal() {
@@ -398,15 +439,7 @@
       document.getElementById('githubModal').classList.remove('flex');
     }
 
-    document.getElementById('syncGithubBtn').addEventListener('click', () => {
-      const savedToken = localStorage.getItem(TOKEN_KEY);
-      if (savedToken) {
-        pushToGithub(savedToken);
-      } else {
-        document.getElementById('githubModal').classList.remove('hidden');
-        document.getElementById('githubModal').classList.add('flex');
-      }
-    });
+    document.getElementById('syncGithubBtn').addEventListener('click', openGithubModal);
 
     document.getElementById('githubForm').addEventListener('submit', e => {
       e.preventDefault();
@@ -451,13 +484,13 @@
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const maxWidth = 900;
+          const maxWidth = 800;
           const scale = Math.min(1, maxWidth / img.width);
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.68);
           document.getElementById('sectionCoverUrl').value = compressedDataUrl;
           updateCoverPreview(compressedDataUrl);
         };
@@ -480,8 +513,8 @@
       const temp = appData.sections[idx];
       appData.sections[idx] = appData.sections[targetIdx];
       appData.sections[targetIdx] = temp;
-      saveToLocal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     }
 
     function deleteSection(sectionId) {
@@ -494,8 +527,8 @@
       if (!confirm(msg)) return;
       appData.sections = appData.sections.filter(s => s.id !== sectionId);
       appData.links = appData.links.filter(l => l.sectionId !== sectionId);
-      saveToLocal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     }
 
     function openSectionModal(section = null) {
@@ -540,23 +573,23 @@
       const temp = appData.links[idx];
       appData.links[idx] = appData.links[targetIdx];
       appData.links[targetIdx] = temp;
-      saveToLocal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     }
 
     function togglePin(linkId) {
       const link = appData.links.find(l => l.id === linkId);
       if (!link) return;
       link.pinned = !link.pinned;
-      saveToLocal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     }
 
     function deleteLink(linkId) {
       if (!confirm('¿Eliminar este enlace?')) return;
       appData.links = appData.links.filter(l => l.id !== linkId);
-      saveToLocal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     }
 
     function openLinkModal(link = null, defaultSectionId = null) {
@@ -677,12 +710,11 @@
           appData.links[fromIdx].sectionId = appData.links[toIdx].sectionId;
           const [movedItem] = appData.links.splice(fromIdx, 1);
           appData.links.splice(toIdx, 0, movedItem);
-          saveToLocal();
           render(document.getElementById('searchInput').value);
+          persistChanges();
         });
       });
 
-      // Permitir soltar un link directamente sobre una carpeta vacía
       document.querySelectorAll('[data-drop-section]').forEach(zone => {
         zone.addEventListener('dragover', e => e.preventDefault());
         zone.addEventListener('drop', e => {
@@ -692,8 +724,8 @@
           const link = appData.links.find(l => l.id === draggedLinkId);
           if (link) {
             link.sectionId = targetSectionId;
-            saveToLocal();
             render(document.getElementById('searchInput').value);
+            persistChanges();
           }
         });
       });
@@ -716,7 +748,7 @@
                (link.tags || []).some(t => t.toLowerCase().includes(query));
       });
 
-      if (filteredLinks.length === 0 && !editMode) {
+      if (filteredLinks.length === 0 && !editMode && appData.sections.length === 0) {
         pinnedContainer.classList.add('hidden');
         emptyState.classList.remove('hidden');
         lucide.createIcons();
@@ -738,7 +770,7 @@
 
       appData.sections.forEach(section => {
         const secLinks = filteredLinks.filter(l => l.sectionId === section.id);
-        if (secLinks.length === 0 && !editMode) return;
+        if (secLinks.length === 0 && query) return;
 
         const theme = colorMap[section.color] || colorMap.slate;
         const safeSecJson = JSON.stringify(section).replace(/'/g, "&#39;");
@@ -771,13 +803,18 @@
             </button>
           </div>
         ` : `
-          <button onclick="toggleCollapse('${section.id}')" class="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition" title="${isCollapsed ? 'Expandir carpeta' : 'Minimizar carpeta'}">
-            <i data-lucide="${isCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4"></i>
-          </button>
+          <div class="flex items-center gap-1 ml-auto">
+            <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-slate-400 hover:text-sky-400 hover:bg-slate-800/70 transition" title="Agregar link aquí">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="toggleCollapse('${section.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition" title="${isCollapsed ? 'Expandir carpeta' : 'Minimizar carpeta'}">
+              <i data-lucide="${isCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4"></i>
+            </button>
+          </div>
         `;
 
-        const emptyFolderHint = (secLinks.length === 0 && editMode)
-          ? `<div data-drop-section="${section.id}" class="col-span-full p-6 rounded-xl border border-dashed border-slate-700 text-xs text-slate-400 text-center">Carpeta vacía — arrastra un link hasta aquí o haz clic en "+ Link".</div>`
+        const emptyFolderHint = (secLinks.length === 0)
+          ? `<div data-drop-section="${section.id}" class="col-span-full p-5 rounded-xl border border-dashed border-slate-800 text-xs text-slate-500 text-center">Carpeta vacía — haz clic en <strong>+</strong> para agregar un enlace aquí.</div>`
           : '';
 
         const sectionEl = document.createElement('section');
@@ -841,9 +878,9 @@
       } else {
         appData.sections.push(secObj);
       }
-      saveToLocal();
       closeSectionModal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     });
 
     document.getElementById('linkForm').addEventListener('submit', e => {
@@ -866,9 +903,9 @@
       } else {
         appData.links.push(linkObj);
       }
-      saveToLocal();
       closeLinkModal();
       render(document.getElementById('searchInput').value);
+      persistChanges();
     });
 
     document.getElementById('exportBtn').addEventListener('click', () => {
@@ -882,31 +919,25 @@
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!confirm('¿Descartar cambios no sincronizados y recargar desde GitHub?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    });
-
     document.getElementById('searchInput').addEventListener('input', e => render(e.target.value));
 
     lucide.createIcons();
 
-    // Carga inicial: siempre intenta traer la última versión de GitHub primero para mantener dispositivos sincronizados
+    if (localStorage.getItem(TOKEN_KEY)) {
+      setCloudStatus('ok', 'Nube conectada');
+    } else {
+      setCloudStatus('warn', 'Falta Token (clic aquí)');
+    }
+
+    // Carga inicial: siempre prioriza la última versión guardada en GitHub
     fetch(JSON_FILE + '?t=' + Date.now())
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();
       })
       .then(data => {
-        const localSaved = localStorage.getItem(STORAGE_KEY);
-        // Si nunca se editó localmente o si el archivo remoto tiene datos, prioriza lo último guardado
-        if (!localSaved) {
-          appData = data;
-          saveToLocal();
-        } else {
-          appData = JSON.parse(localSaved);
-        }
+        appData = data;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
         render();
       })
       .catch(() => {
