@@ -188,9 +188,13 @@
     {
       "id": "lnk-v9",
       "sectionId": "sec-vive",
-      "title": "App de Radar",
+      "title": "RADAR VIVE",
       "url": "https://claude.ai/artifact/MmpxKE7z7J1NVKGQNP4Gh",
       "description": "Radar de seguimiento y coyuntura",
+      "cardColor": "inherit",
+      "textColor": "rose",
+      "fontFamily": "mono",
+      "fontSize": "lg",
       "tags": [
         "radar",
         "claude",
