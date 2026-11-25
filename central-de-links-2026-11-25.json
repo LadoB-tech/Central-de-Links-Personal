@@ -98,6 +98,10 @@
       "title": "Instagram La Plata",
       "url": "https://instagram.com/vive.laplata",
       "description": "Cuenta oficial @vive.laplata",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "serif",
+      "fontSize": "sm",
       "tags": [
         "redes",
         "instagram",
