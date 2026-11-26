@@ -41,12 +41,6 @@
       "coverPos": "top"
     },
     {
-      "id": "sec-ies",
-      "name": "Profesorado (IES N.° 1)",
-      "color": "emerald",
-      "icon": "graduation-cap"
-    },
-    {
       "id": "sec-1795628619810",
       "name": "Radar de ofertas",
       "color": "emerald",
@@ -55,6 +49,12 @@
       "coverSize": "md",
       "coverFit": "contain",
       "coverPos": "center"
+    },
+    {
+      "id": "sec-ies",
+      "name": "Profesorado (IES N.° 1)",
+      "color": "emerald",
+      "icon": "graduation-cap"
     }
   ],
   "links": [
