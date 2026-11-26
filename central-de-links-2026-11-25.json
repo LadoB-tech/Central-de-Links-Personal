@@ -321,6 +321,13 @@
       "title": "Formulario de Personas (visitas)",
       "url": "https://docs.google.com/spreadsheets/d/1OzwQpmf7G-EdHyUd1dW1cU4Wa_GPlPnAKVzLaHyCOco/edit",
       "description": "",
+      "imageUrl": "https://image.thum.io/get/width/800/crop/450/https://docs.google.com/spreadsheets/d/1OzwQpmf7G-EdHyUd1dW1cU4Wa_GPlPnAKVzLaHyCOco/edit",
+      "imageSize": "md",
+      "imageFit": "cover",
+      "cardColor": "inherit",
+      "textColor": "white",
+      "fontFamily": "sans",
+      "fontSize": "base",
       "tags": [],
       "pinned": false
     },
