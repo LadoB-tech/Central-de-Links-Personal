@@ -394,6 +394,22 @@
       "fontSize": "lg",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795711619519",
+      "sectionId": "sec-1795628619810",
+      "title": "Link Para PRO",
+      "url": "https://docs.google.com/spreadsheets/d/18kGNFXo0ZifuFbR7j7zGMGKPRSuIRFuzuDDrN9qCq68/edit?gid=799979554#gid=799979554",
+      "description": "",
+      "imageUrl": "Link para los PRO",
+      "imageSize": "md",
+      "imageFit": "cover",
+      "cardColor": "inherit",
+      "textColor": "sky",
+      "fontFamily": "serif",
+      "fontSize": "base",
+      "tags": [],
+      "pinned": false
     }
   ]
 }
