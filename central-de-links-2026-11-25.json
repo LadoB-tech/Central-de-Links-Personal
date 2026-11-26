@@ -31,12 +31,6 @@
       "coverPos": "center"
     },
     {
-      "id": "sec-ies",
-      "name": "Profesorado (IES N.° 1)",
-      "color": "emerald",
-      "icon": "graduation-cap"
-    },
-    {
       "id": "sec-1795627901891",
       "name": "JUEGO TEST POLITICO",
       "color": "sky",
@@ -45,6 +39,12 @@
       "coverSize": "md",
       "coverFit": "contain",
       "coverPos": "top"
+    },
+    {
+      "id": "sec-ies",
+      "name": "Profesorado (IES N.° 1)",
+      "color": "emerald",
+      "icon": "graduation-cap"
     },
     {
       "id": "sec-1795628619810",
