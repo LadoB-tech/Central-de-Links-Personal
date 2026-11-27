@@ -490,6 +490,18 @@
       "cardColor": "#00a85f",
       "clicks": 1,
       "lastOpened": 1795797182348
+    },
+    {
+      "id": "lnk-1795799811077",
+      "sectionId": "sec-1795628619810",
+      "title": "Radar de ofertas (github)",
+      "url": "https://viveclickcaba-sketch.github.io/billeteraeconomizadora/",
+      "description": "",
+      "imageUrl": "https://image.thum.io/get/width/800/crop/450/https://viveclickcaba-sketch.github.io/billeteraeconomizadora/",
+      "imageFit": "cover",
+      "cardColor": "#a30000",
+      "tags": [],
+      "pinned": false
     }
   ],
   "settings": {
