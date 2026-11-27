@@ -133,7 +133,9 @@
         "monitor",
         "caba"
       ],
-      "pinned": true
+      "pinned": true,
+      "clicks": 1,
+      "lastOpened": 1795780124610
     },
     {
       "id": "lnk-v6",
@@ -441,5 +443,6 @@
       "tags": [],
       "pinned": false
     }
-  ]
+  ],
+  "settings": {}
 }
