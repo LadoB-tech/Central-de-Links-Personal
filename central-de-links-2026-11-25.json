@@ -474,5 +474,13 @@
       "cardColor": "#00a85f"
     }
   ],
-  "settings": {}
+  "settings": {
+    "theme": "claro",
+    "accent": "#d4ea2e",
+    "bgType": "gradient",
+    "bgImage": "",
+    "view": "compact",
+    "fontSize": "md",
+    "glass": true
+  }
 }
