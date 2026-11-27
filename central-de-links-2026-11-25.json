@@ -475,11 +475,11 @@
     }
   ],
   "settings": {
-    "theme": "claro",
-    "accent": "#d4ea2e",
+    "theme": "lima",
+    "accent": null,
     "bgType": "gradient",
     "bgImage": "",
-    "view": "compact",
+    "view": "list",
     "fontSize": "md",
     "glass": true
   }
