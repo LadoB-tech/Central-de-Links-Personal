@@ -304,7 +304,9 @@
         "tareas",
         "productividad"
       ],
-      "pinned": true
+      "pinned": true,
+      "clicks": 1,
+      "lastOpened": 1795782757429
     },
     {
       "id": "lnk-1795627799211",
