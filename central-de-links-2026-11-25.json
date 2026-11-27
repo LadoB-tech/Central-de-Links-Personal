@@ -442,6 +442,18 @@
       "fontSize": "base",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795780225378",
+      "sectionId": "sec-1795627901891",
+      "title": "Correr Monitor Politico",
+      "url": "https://github.com/viveclickcaba-sketch/monitor-politico-x/actions/workflows/actualizar_datos.yml",
+      "description": "",
+      "imageUrl": "https://image.thum.io/get/width/800/crop/450/https://github.com/viveclickcaba-sketch/monitor-politico-x/actions/workflows/actualizar_datos.yml",
+      "imageFit": "cover",
+      "cardColor": "lima",
+      "tags": [],
+      "pinned": false
     }
   ],
   "settings": {}
