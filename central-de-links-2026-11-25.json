@@ -419,7 +419,9 @@
       "imageFit": "cover",
       "cardColor": "#a30000",
       "tags": [],
-      "pinned": false
+      "pinned": false,
+      "clicks": 1,
+      "lastOpened": 1795822241325
     },
     {
       "id": "lnk-1795711444535",
