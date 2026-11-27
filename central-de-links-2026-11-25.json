@@ -357,7 +357,9 @@
       "fontFamily": "sans",
       "fontSize": "base",
       "tags": [],
-      "pinned": false
+      "pinned": false,
+      "clicks": 1,
+      "lastOpened": 1795780509332
     },
     {
       "id": "lnk-1795780339418",
