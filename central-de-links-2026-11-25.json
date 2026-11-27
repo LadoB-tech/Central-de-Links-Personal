@@ -158,19 +158,6 @@
       "pinned": true
     },
     {
-      "id": "lnk-v8",
-      "sectionId": "sec-vive",
-      "title": "App de Sala por Sala",
-      "url": "https://claude.ai/artifact/LHDuJoHZHKPCU2LQrXkjpw",
-      "description": "Herramienta interactiva Sala por Sala",
-      "tags": [
-        "app",
-        "claude",
-        "datos"
-      ],
-      "pinned": false
-    },
-    {
       "id": "lnk-v9",
       "sectionId": "sec-vive",
       "title": "App de Radar",
@@ -191,6 +178,19 @@
       "pinned": false,
       "clicks": 1,
       "lastOpened": 1795780477427
+    },
+    {
+      "id": "lnk-v8",
+      "sectionId": "sec-vive",
+      "title": "App de Sala por Sala",
+      "url": "https://claude.ai/artifact/LHDuJoHZHKPCU2LQrXkjpw",
+      "description": "Herramienta interactiva Sala por Sala",
+      "tags": [
+        "app",
+        "claude",
+        "datos"
+      ],
+      "pinned": false
     },
     {
       "id": "lnk-1795631074034",
