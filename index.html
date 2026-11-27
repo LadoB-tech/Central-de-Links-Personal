@@ -2,446 +2,549 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Central de Links</title><link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Central de Links</title>
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Links">
+  <meta name="theme-color" content="#06070b">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Lora:wght@500;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    .font-custom-sans { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
-    .font-custom-serif { font-family: 'Lora', ui-serif, Georgia, serif; }
-    .font-custom-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-    .font-custom-rounded { font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif; }
+    :root {
+      --accent: #d4ea2e; --on-accent: #0b0d05;
+      --bg: #06070b; --bg2: #0b2a35;
+      --surface: 18, 20, 28; --line: 255, 255, 255;
+      --text: #f1f5f9; --muted: #94a3b8;
+      --panel-a: .62; --blur: 18px;
+    }
+    html { font-size: 16px; }
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+    #bgLayer { position: fixed; inset: 0; z-index: -1; background: var(--bg); background-size: cover; background-position: center; transition: background .4s; }
+    ::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+
+    .txt { color: var(--text); }
+    .muted { color: var(--muted); }
+    .acc { color: var(--accent); }
+    .panel { background: rgba(var(--surface), var(--panel-a)); border: 1px solid rgba(var(--line), .08); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+    .panel-solid { background: rgb(var(--surface)); border: 1px solid rgba(var(--line), .1); }
+    .field { width: 100%; background: rgba(var(--line), .05); border: 1px solid rgba(var(--line), .1); border-radius: .85rem; padding: .55rem .8rem; font-size: .875rem; color: var(--text); outline: none; transition: border-color .2s, box-shadow .2s; }
+    .field::placeholder { color: var(--muted); opacity: .8; }
+    .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+    select.field option { background: rgb(var(--surface)); color: var(--text); }
+    .lbl { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); margin-bottom: .3rem; }
+    .sec-title { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .95rem; border-radius: .9rem; font-size: .875rem; font-weight: 600; transition: all .2s; white-space: nowrap; }
+    .btn-accent { background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px -10px var(--accent); }
+    .btn-accent:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-ghost { background: rgba(var(--line), .06); border: 1px solid rgba(var(--line), .1); color: var(--text); }
+    .btn-ghost:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+    .btn-icon { padding: .55rem; }
+    .btn-danger { background: rgba(239, 68, 68, .14); color: #f87171; }
+    .btn-danger:hover { background: rgba(239, 68, 68, .28); }
+    .mini { padding: .35rem; border-radius: .6rem; background: rgba(var(--surface), .85); border: 1px solid rgba(var(--line), .1); color: var(--muted); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: all .15s; }
+    .mini:hover { color: var(--text); border-color: var(--accent); }
+    .tag { font-size: .68rem; padding: .12rem .45rem; border-radius: .45rem; background: rgba(var(--line), .06); border: 1px solid rgba(var(--line), .08); color: var(--muted); white-space: nowrap; }
+    .pill { display: inline-flex; align-items: center; gap: .3rem; font-size: .68rem; font-weight: 600; padding: .15rem .5rem; border-radius: .45rem; background: color-mix(in srgb, var(--c) 18%, transparent); color: color-mix(in srgb, var(--c) 75%, var(--text)); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); max-width: 100%; overflow: hidden; }
+    .clamp1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .clamp2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ---------- Tarjetas de link (todas iguales) ---------- */
+    .lcard { --c: var(--accent); position: relative; border-radius: 1.25rem; overflow: hidden;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--c) 13%, rgba(var(--surface), var(--panel-a))) 0%, rgba(var(--surface), var(--panel-a)) 70%);
+      border: 1px solid color-mix(in srgb, var(--c) 28%, rgba(var(--line), .06));
+      -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+      transition: transform .25s, box-shadow .25s, border-color .25s; }
+    .lcard:hover { transform: translateY(-3px); border-color: var(--c); box-shadow: 0 14px 34px -14px color-mix(in srgb, var(--c) 70%, transparent); }
+    .lcard .media { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: rgba(0,0,0,.25); }
+    .lcard .media img.photo { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .lcard .media img.fit { object-fit: contain; padding: .5rem; }
+    .lcard:hover .media img.photo:not(.fit) { transform: scale(1.05); }
+    .lcard .ph { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem;
+      background: radial-gradient(120% 90% at 30% 10%, color-mix(in srgb, var(--c) 45%, transparent), transparent 70%), linear-gradient(135deg, color-mix(in srgb, var(--c) 22%, rgb(var(--surface))), rgb(var(--surface))); }
+    .lcard .ph img { width: 44px; height: 44px; border-radius: .8rem; background: rgba(255,255,255,.9); padding: 6px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+    .lcard .ph span { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.85); text-shadow: 0 1px 6px rgba(0,0,0,.5); }
+    .lcard .bar { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--c); z-index: 3; }
+    .lcard .body { padding: .85rem 1rem 1rem; }
+    .lcard h3 { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.35; }
+    .lcard .desc { font-size: .78rem; color: var(--muted); line-height: 1.45; min-height: 2.26rem; margin-top: .25rem; }
+    .lcard .tags { display: flex; gap: .35rem; overflow: hidden; height: 1.4rem; margin-top: .7rem; }
+    .lcard .actions { position: absolute; top: .6rem; right: .6rem; z-index: 5; display: flex; gap: .25rem; transition: opacity .2s; }
+    @media (hover: hover) { .lcard .actions { opacity: 0; } .lcard:hover .actions, .edit-on .lcard .actions { opacity: 1; } }
+
+    /* Vista compacta */
+    .view-compact .lcard a.inner { display: flex; align-items: center; gap: .8rem; padding: .7rem; height: 5.2rem; }
+    .view-compact .lcard .media { width: 3.8rem; height: 3.8rem; aspect-ratio: 1; border-radius: .8rem; flex-shrink: 0; }
+    .view-compact .lcard .ph img { width: 26px; height: 26px; padding: 3px; border-radius: .5rem; }
+    .view-compact .lcard .ph span, .view-compact .lcard .tags, .view-compact .lcard .bar { display: none; }
+    .view-compact .lcard .body { padding: 0; min-width: 0; flex: 1; padding-right: 2rem; }
+    .view-compact .lcard .desc { min-height: 0; -webkit-line-clamp: 1; }
+    .view-compact .lcard h3 { font-size: .92rem; }
+    .view-compact .lcard .pill { display: none; }
+    .view-compact .lcard .actions { top: 50%; transform: translateY(-50%); flex-direction: column; }
+    .view-compact .lcard .actions .opt { display: none; }
+    /* Vista lista */
+    .view-list .lcard { border-radius: .9rem; }
+    .view-list .lcard:hover { transform: translateX(3px); }
+    .view-list .lcard a.inner { display: flex; align-items: center; gap: .75rem; padding: .55rem .8rem; height: 3.3rem; }
+    .view-list .lcard .media { width: 2rem; height: 2rem; aspect-ratio: 1; border-radius: .55rem; flex-shrink: 0; background: transparent; }
+    .view-list .lcard .media img.photo { display: none; }
+    .view-list .lcard .media .ph { display: none; }
+    .view-list .lcard .media .fav { display: block !important; width: 100%; height: 100%; border-radius: .55rem; background: rgba(255,255,255,.92); padding: 4px; }
+    .view-list .lcard .body { padding: 0; flex: 1; min-width: 0; display: flex; align-items: center; gap: .6rem; padding-right: 6rem; }
+    .view-list .lcard .desc, .view-list .lcard .tags, .view-list .lcard .pill, .view-list .lcard .bar { display: none; }
+    .view-list .lcard h3 { font-size: .92rem; font-weight: 600; }
+    .view-list .lcard .dom { display: inline !important; }
+    .view-list .lcard .dot { display: block !important; }
+    .view-list .lcard .actions { top: 50%; transform: translateY(-50%); }
+
+    /* Carpetas */
+    .fcard { --c: var(--accent); position: relative; border-radius: 1.5rem; overflow: hidden; cursor: pointer; border: 1px solid rgba(var(--line), .08); transition: transform .3s, box-shadow .3s, border-color .3s; background: rgb(var(--surface)); }
+    .fcard:hover { transform: translateY(-3px); border-color: var(--c); box-shadow: 0 18px 40px -16px color-mix(in srgb, var(--c) 65%, transparent); }
+    .fcard .cover { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; }
+    .fcard .cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+    .fcard:hover .cover img { transform: scale(1.06); }
+    .fcard .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.25) 55%, transparent); }
+    .icon-badge { display: inline-flex; padding: .5rem; border-radius: .8rem; background: color-mix(in srgb, var(--c) 25%, rgba(0,0,0,.35)); color: color-mix(in srgb, var(--c) 80%, white); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+
+    /* Swatches */
+    .sw { width: 1.9rem; height: 1.9rem; border-radius: 999px; border: 2px solid rgba(var(--line), .15); cursor: pointer; position: relative; transition: transform .15s; flex-shrink: 0; }
+    .sw:hover { transform: scale(1.1); }
+    .sw.on { border-color: var(--text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 25%, transparent); }
+    .sw.inherit { background: conic-gradient(from 0deg, #888 0 25%, #555 0 50%, #888 0 75%, #555 0); }
+    .sw-custom { overflow: hidden; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); }
+    .sw-custom input { position: absolute; inset: -8px; opacity: 0; cursor: pointer; width: 200%; height: 200%; }
+    .opt-btn { flex: 1; padding: .6rem .5rem; border-radius: .8rem; border: 1px solid rgba(var(--line), .1); background: rgba(var(--line), .04); font-size: .78rem; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: .3rem; transition: all .15s; }
+    .opt-btn.on { border-color: var(--accent); color: var(--text); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    .theme-card { border-radius: 1rem; padding: .6rem; border: 2px solid transparent; cursor: pointer; transition: all .15s; text-align: left; }
+    .theme-card.on { border-color: var(--accent); }
+    .switch { width: 2.6rem; height: 1.5rem; border-radius: 999px; background: rgba(var(--line), .15); position: relative; transition: background .2s; flex-shrink: 0; }
+    .switch::after { content: ''; position: absolute; top: .2rem; left: .2rem; width: 1.1rem; height: 1.1rem; border-radius: 999px; background: white; transition: transform .2s; }
+    .switch.on { background: var(--accent); }
+    .switch.on::after { transform: translateX(1.1rem); }
+
+    /* Modales */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); z-index: 60; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; }
+    .modal.open { display: flex; }
+    .modal .box { width: 100%; max-width: 32rem; border-radius: 1.5rem; padding: 1.4rem; margin: auto 0; box-shadow: 0 30px 80px -20px rgba(0,0,0,.6); }
+    .block-box { padding: .9rem; border-radius: 1rem; background: rgba(var(--line), .035); border: 1px solid rgba(var(--line), .08); }
+
+    /* Barra inferior (celular) */
+    .bottom-bar { position: fixed; left: .75rem; right: .75rem; bottom: calc(.75rem + env(safe-area-inset-bottom)); z-index: 40; border-radius: 1.4rem; display: flex; justify-content: space-around; align-items: center; padding: .45rem; box-shadow: 0 16px 40px -10px rgba(0,0,0,.6); }
+    .bottom-bar button { display: flex; flex-direction: column; align-items: center; gap: .15rem; font-size: .62rem; font-weight: 600; color: var(--muted); padding: .35rem .5rem; border-radius: .9rem; min-width: 3.4rem; }
+    .bottom-bar button.on { color: var(--accent); }
+    .bottom-bar .plus { width: 3.1rem; height: 3.1rem; border-radius: 1.1rem; background: var(--accent); color: var(--on-accent); justify-content: center; min-width: 0; box-shadow: 0 8px 22px -8px var(--accent); }
+    .safe-top { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
+    @media (max-width: 767px) { #appContent { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); } }
+    @media (min-width: 768px) { .bottom-bar { display: none; } }
+    .no-glass { --blur: 0px; }
+    .toast { position: fixed; left: 50%; bottom: calc(6.5rem + env(safe-area-inset-bottom)); transform: translate(-50%, 200%); z-index: 80; display: flex; align-items: center; gap: .8rem; padding: .7rem .8rem .7rem 1.1rem; border-radius: 1rem; font-size: .85rem; font-weight: 600; transition: transform .3s; box-shadow: 0 16px 40px -10px rgba(0,0,0,.6); max-width: calc(100% - 2rem); }
+    .toast.show { transform: translate(-50%, 0); }
+    @media (min-width: 768px) { .toast { bottom: 2rem; } }
+    /* Arrastrar y soltar */
+    .drag-ghost { opacity: .35; }
+    .drag-chosen { transform: scale(1.03) rotate(-1deg); box-shadow: 0 24px 50px -12px rgba(0,0,0,.7) !important; z-index: 30; }
+    .drop-bar { position: fixed; left: 50%; transform: translateX(-50%) translateY(150%); bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 55; width: min(44rem, calc(100% - 1.5rem)); border-radius: 1.3rem; padding: .7rem; transition: transform .25s; box-shadow: 0 20px 50px -10px rgba(0,0,0,.7); }
+    .drop-bar.show { transform: translateX(-50%) translateY(0); }
+    .drop-chip { --c: var(--accent); min-width: 6.5rem; min-height: 3rem; flex-shrink: 0; display: flex; align-items: center; gap: .45rem; padding: .5rem .7rem; border-radius: .9rem; font-size: .78rem; font-weight: 700; color: var(--text); background: color-mix(in srgb, var(--c) 16%, transparent); border: 1.5px dashed color-mix(in srgb, var(--c) 60%, transparent); transition: all .15s; }
+    .drop-chip.over, .drop-chip:has(.lcard) { background: color-mix(in srgb, var(--c) 40%, transparent); border-style: solid; transform: scale(1.05); }
+    .drop-chip .lcard { display: none !important; }
+    .fcard.drop-over { border-color: var(--c); box-shadow: 0 0 0 3px var(--c); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-sky-500/30 font-custom-sans">
+<body class="antialiased">
+  <div id="bgLayer"></div>
 
   <!-- Pantalla de Bloqueo con Clave -->
-  <div id="lockScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
-      <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mx-auto mb-4">
-        <i data-lucide="lock" class="w-6 h-6"></i>
-      </div>
-      <h2 class="text-lg font-bold text-white">Central de Links</h2>
-      <p class="text-xs text-slate-400 mt-1 mb-5">Ingresa tu clave para acceder</p>
-      
+  <div id="lockScreen" class="fixed inset-0 flex items-center justify-center p-4 z-[70]" style="background: var(--bg)">
+    <div class="panel-solid rounded-3xl max-w-sm w-full p-7 shadow-2xl text-center">
+      <img src="apple-touch-icon.png" alt="" class="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-lg" />
+      <h2 class="text-lg font-bold txt">Central de Links</h2>
+      <p class="text-xs muted mt-1 mb-5">Ingresá tu clave para acceder</p>
       <form id="unlockForm" class="space-y-3">
-        <input 
-          type="password" 
-          id="passwordInput" 
-          placeholder="Contraseña..." 
-          required
-          autofocus
-          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-center text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
-        />
-        <label class="flex items-center justify-center gap-2 cursor-pointer text-xs text-slate-400 pt-1">
-          <input type="checkbox" id="rememberDevice" checked class="rounded bg-slate-950 border-slate-700 text-sky-500 focus:ring-0" />
+        <input type="password" id="passwordInput" placeholder="Contraseña..." required autofocus class="field text-center" />
+        <label class="flex items-center justify-center gap-2 cursor-pointer text-xs muted pt-1">
+          <input type="checkbox" id="rememberDevice" checked style="accent-color: var(--accent)" />
           <span>Recordar en este dispositivo</span>
         </label>
-        <p id="lockError" class="text-xs text-red-400 hidden">Clave incorrecta. Intenta de nuevo.</p>
-        <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-          Entrar
-        </button>
+        <p id="lockError" class="text-xs text-red-400 hidden">Clave incorrecta. Intentá de nuevo.</p>
+        <button type="submit" class="btn btn-accent w-full justify-center">Entrar</button>
       </form>
     </div>
   </div>
 
   <!-- Contenido Principal -->
-  <div id="appContent" class="hidden max-w-6xl mx-auto px-4 py-10">
-    
-    <!-- Encabezado y controles -->
-    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-800 pb-6">
-      <div>
-        <div class="flex flex-wrap items-center gap-3">
-          <h1 class="text-2xl font-bold tracking-tight text-white">Central de Links</h1>
-          <span id="cloudStatusBadge" onclick="openGithubModal()" class="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 transition" title="Clic para configurar o cambiar el Token de GitHub">
-            <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-            <span id="cloudStatusText">Sin conectar nube</span>
-          </span>
+  <div id="appContent" class="hidden max-w-6xl mx-auto px-4 safe-top pb-12">
+
+    <!-- Encabezado -->
+    <header class="mb-8">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0 cursor-pointer" onclick="goHome(); clearSearch();">
+          <img src="apple-touch-icon.png" alt="" class="w-11 h-11 rounded-2xl shadow-lg shrink-0" />
+          <div class="min-w-0">
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight txt leading-tight">Central de Links</h1>
+            <span id="cloudStatusBadge" onclick="event.stopPropagation(); openGithubModal()" class="cursor-pointer inline-flex items-center gap-1.5 mt-0.5 text-[11px] font-medium muted hover:opacity-80" title="Configurar o cambiar el Token de GitHub">
+              <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span id="cloudStatusText">Sin conectar nube</span>
+            </span>
+          </div>
         </div>
-        <p class="text-sm text-slate-400 mt-1">Tus carpetas visuales y enlaces siempre sincronizados</p>
+
+        <div class="flex items-center gap-2">
+          <div class="relative hidden md:block w-60">
+            <i data-lucide="search" class="w-4 h-4 muted absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="text" id="searchInput" placeholder="Buscar link o carpeta..." class="field" style="padding-left: 2.4rem" />
+          </div>
+          <button id="toggleEditBtn" class="btn btn-ghost" title="Ordenar">
+            <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+            <span id="toggleEditText" class="hidden sm:inline">Ordenar</span>
+          </button>
+          <button onclick="openAppearance()" class="btn btn-ghost hidden md:inline-flex" title="Apariencia">
+            <i data-lucide="palette" class="w-4 h-4 acc"></i>
+            <span>Apariencia</span>
+          </button>
+          <button id="addSectionBtn" class="btn btn-ghost hidden md:inline-flex">
+            <i data-lucide="folder-plus" class="w-4 h-4 acc"></i>
+            <span>Carpeta</span>
+          </button>
+          <button id="addLinkBtn" class="btn btn-accent hidden md:inline-flex">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Link</span>
+          </button>
+          <button id="lockBtn" class="btn btn-ghost btn-icon" title="Bloquear pantalla">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+          </button>
+        </div>
       </div>
-      
-      <div class="flex flex-wrap items-center gap-2.5">
-        <div class="relative w-full sm:w-56">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-          <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Buscar link o carpeta..." 
-            class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition"
-          />
-        </div>
 
-        <button id="toggleEditBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-200 transition">
-          <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
-          <span id="toggleEditText">Ordenar</span>
-        </button>
-
-        <button id="addSectionBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 transition">
-          <i data-lucide="folder-plus" class="w-4 h-4 text-amber-400"></i>
-          <span>Carpeta</span>
-        </button>
-
-        <button id="addLinkBtn" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Link</span>
-        </button>
-
-        <button id="lockBtn" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-600 text-slate-400 hover:text-white transition" title="Bloquear pantalla">
-          <i data-lucide="lock" class="w-4 h-4"></i>
-        </button>
+      <!-- Buscador en celular -->
+      <div class="relative md:hidden mt-4">
+        <i data-lucide="search" class="w-4 h-4 muted absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="searchInputMobile" placeholder="Buscar link o carpeta..." class="field" style="padding-left: 2.4rem" />
       </div>
     </header>
 
-    <!-- Barra de herramientas de ordenamiento -->
-    <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-xs text-amber-300">
+    <!-- Barra de ordenamiento -->
+    <div id="editToolbar" class="hidden mb-8 p-4 rounded-2xl panel flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3" style="border-color: color-mix(in srgb, var(--accent) 40%, transparent)">
+      <div class="flex items-center gap-2 text-xs acc">
         <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-        <span>Modo ordenamiento activo: usa las flechas en carpetas o links para cambiar su posición. También puedes editar cada tarjeta con su ícono de lápiz en cualquier momento.</span>
+        <span>Tip: también podés mantener apretada una carpeta o un link y arrastrarlo. Para pasar un link a otra carpeta, arrastralo y soltalo en la barra de abajo.</span>
       </div>
       <div class="flex flex-wrap items-center gap-2 shrink-0">
-        <button id="syncGithubBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-          <i data-lucide="key" class="w-3.5 h-3.5"></i>
-          <span>Token GitHub</span>
-        </button>
-        <button id="exportBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Respaldo JSON</span>
-        </button>
+        <button id="syncGithubBtn" class="btn btn-ghost text-xs"><i data-lucide="key" class="w-3.5 h-3.5"></i><span>Token GitHub</span></button>
+        <button id="exportBtn" class="btn btn-ghost text-xs"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Respaldo JSON</span></button>
       </div>
     </div>
 
-    <!-- VISTA INICIO: Grilla visual de Carpetas con Fotos -->
+    <!-- VISTA INICIO -->
     <div id="homeView">
       <section id="pinnedContainer" class="mb-10 hidden">
         <div class="flex items-center gap-2 mb-4">
-          <i data-lucide="pin" class="w-4 h-4 text-amber-400"></i>
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Accesos Fijados</h2>
+          <i data-lucide="pin" class="w-4 h-4 acc"></i>
+          <h2 class="sec-title">Accesos fijados</h2>
         </div>
-        <div id="pinnedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="pinnedGrid" class="links-grid"></div>
+      </section>
+
+      <section id="topContainer" class="mb-10 hidden">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="flame" class="w-4 h-4 acc"></i>
+          <h2 class="sec-title">Más usados</h2>
+        </div>
+        <div id="topGrid" class="links-grid"></div>
       </section>
 
       <section>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <i data-lucide="layout-grid" class="w-4 h-4 text-sky-400"></i>
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Mis Carpetas</h2>
+            <i data-lucide="layout-grid" class="w-4 h-4 acc"></i>
+            <h2 class="sec-title">Mis carpetas</h2>
           </div>
-          <span id="foldersCountBadge" class="text-xs text-slate-500"></span>
+          <span id="foldersCountBadge" class="text-xs muted"></span>
         </div>
-        <div id="foldersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="foldersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
       </section>
     </div>
 
-    <!-- VISTA DETALLE DE CARPETA ABIERTA -->
+    <!-- VISTA CARPETA ABIERTA -->
     <div id="folderDetailView" class="hidden">
-      <div class="mb-6">
-        <button onclick="goHome()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition">
-          <i data-lucide="arrow-left" class="w-4 h-4 text-sky-400"></i>
-          <span>Volver a todas las carpetas</span>
+      <div class="mb-5">
+        <button onclick="goHome()" class="btn btn-ghost">
+          <i data-lucide="arrow-left" class="w-4 h-4 acc"></i>
+          <span>Todas las carpetas</span>
         </button>
       </div>
-
-      <div id="folderDetailHeader" class="rounded-3xl bg-slate-900/70 border border-slate-800 overflow-hidden mb-8 shadow-xl"></div>
-      <div id="folderLinksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="folderDetailHeader" class="rounded-3xl overflow-hidden mb-8 panel"></div>
+      <div id="folderLinksGrid" class="links-grid"></div>
     </div>
 
-    <!-- VISTA DE BÚSQUEDA GLOBAL -->
-    <div id="searchResultsView" class="hidden space-y-8">
+    <!-- VISTA BÚSQUEDA -->
+    <div id="searchResultsView" class="hidden space-y-6">
       <div class="flex items-center justify-between">
-        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Resultados de búsqueda</h2>
-        <button onclick="clearSearch()" class="text-xs text-sky-400 hover:underline">Limpiar búsqueda</button>
+        <h2 class="sec-title">Resultados de búsqueda</h2>
+        <button onclick="clearSearch()" class="text-xs acc hover:underline">Limpiar búsqueda</button>
       </div>
-      <div id="searchLinksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="searchLinksGrid" class="links-grid"></div>
     </div>
 
-    <!-- Mensaje sin resultados -->
-    <div id="emptyState" class="hidden text-center py-16 text-slate-500">
+    <div id="emptyState" class="hidden text-center py-16 muted">
       No se encontraron carpetas ni enlaces que coincidan con tu búsqueda.
     </div>
   </div>
 
-  <!-- Modal para Agregar / Editar Link (con Foto/Vista Previa, Carpeta, Color, Letra y Tamaño) -->
-  <div id="linkModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
-      <div class="flex items-center justify-between mb-4">
-        <h3 id="modalTitle" class="text-lg font-bold text-white">Nuevo Link</h3>
-        <button type="button" onclick="closeLinkModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
+  <!-- Barra inferior (celular) -->
+  <nav id="bottomBar" class="bottom-bar panel hidden">
+    <button id="bbHome" onclick="goHome(); clearSearch(); window.scrollTo({top:0,behavior:'smooth'})"><i data-lucide="house" class="w-5 h-5"></i>Inicio</button>
+    <button onclick="focusSearch()"><i data-lucide="search" class="w-5 h-5"></i>Buscar</button>
+    <button class="plus" onclick="openLinkModal()" title="Nuevo link"><i data-lucide="plus" class="w-6 h-6"></i></button>
+    <button onclick="openSectionModal()"><i data-lucide="folder-plus" class="w-5 h-5"></i>Carpeta</button>
+    <button onclick="openAppearance()"><i data-lucide="palette" class="w-5 h-5"></i>Estilo</button>
+  </nav>
 
+  <!-- Aviso con Deshacer -->
+  <div id="toast" class="toast panel-solid">
+    <span id="toastText" class="txt"></span>
+    <button id="toastUndo" class="btn btn-accent text-xs hidden" style="padding:.4rem .8rem">Deshacer</button>
+  </div>
+
+  <!-- Barra para soltar un link en otra carpeta -->
+  <div id="dropBar" class="drop-bar panel-solid">
+    <p class="text-[11px] font-semibold muted mb-2 px-1 flex items-center gap-1.5"><i data-lucide="folder-input" class="w-3.5 h-3.5 acc"></i>Soltalo en una carpeta para moverlo</p>
+    <div id="dropChips" class="flex gap-2 overflow-x-auto pb-1"></div>
+  </div>
+
+  <!-- Modal Link -->
+  <div id="linkModal" class="modal">
+    <div class="box panel-solid">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="modalTitle" class="text-lg font-bold txt">Nuevo link</h3>
+        <button type="button" onclick="closeLinkModal()" class="muted hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
       <form id="linkForm" class="space-y-4">
         <input type="hidden" id="linkId" />
-        
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Carpeta destino (mover link)</label>
-          <select id="linkSection" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500"></select>
+          <label class="lbl">Carpeta</label>
+          <select id="linkSection" required class="field"></select>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Título</label>
-            <input type="text" id="linkTitle" required placeholder="Ej: Drive Vive CABA" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+            <label class="lbl">Título</label>
+            <input type="text" id="linkTitle" required placeholder="Ej: Drive Vive CABA" class="field" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">URL</label>
-            <input type="url" id="linkUrl" required placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+            <label class="lbl">URL</label>
+            <input type="url" id="linkUrl" required placeholder="https://..." class="field" />
           </div>
         </div>
-
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Descripción (opcional)</label>
-          <input type="text" id="linkDesc" placeholder="Breve detalle del enlace" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+          <label class="lbl">Descripción (opcional)</label>
+          <input type="text" id="linkDesc" placeholder="Breve detalle del enlace" class="field" />
         </div>
 
-        <!-- Foto o Vista Previa del Link -->
-        <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/90 space-y-2.5">
+        <div class="block-box space-y-3">
           <div class="flex items-center justify-between gap-2">
-            <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Foto o Vista Previa del Link</label>
-            <button type="button" onclick="generateLinkPreview()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 text-[11px] font-medium transition">
-              <i data-lucide="sparkles" class="w-3 h-3"></i>
-              <span>Generar vista previa</span>
+            <span class="sec-title">Foto de la tarjeta</span>
+            <button type="button" onclick="generateLinkPreview()" class="text-[11px] font-semibold acc inline-flex items-center gap-1 hover:opacity-80">
+              <i data-lucide="sparkles" class="w-3 h-3"></i><span>Captura de la página</span>
             </button>
           </div>
-
-          <input type="text" id="linkImageUrl" placeholder="URL de imagen o vista previa (opcional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500" />
-
-          <div class="flex items-center justify-between gap-2">
-            <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer transition">
-              <i data-lucide="image-plus" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>Subir foto</span>
+          <div id="linkPreviewBox" class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9; background: rgba(0,0,0,.25)">
+            <img id="linkPreviewImg" src="" alt="" class="w-full h-full object-cover hidden" />
+            <div id="linkPreviewEmpty" class="absolute inset-0 flex flex-col items-center justify-center gap-1 muted text-xs">
+              <i data-lucide="image" class="w-6 h-6"></i>
+              <span>Sin foto: se mostrará el logo de la página</span>
+            </div>
+          </div>
+          <input type="text" id="linkImageUrl" placeholder="Pegá la URL de una imagen (opcional)" class="field text-xs" />
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="btn btn-ghost text-xs cursor-pointer">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 acc"></i><span>Subir foto</span>
               <input type="file" id="linkImageFile" accept="image/*" class="hidden" />
             </label>
-
             <div class="flex items-center gap-2">
-              <select id="linkImageSize" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-200 focus:outline-none focus:border-sky-500">
-                <option value="sm">Foto chica</option>
-                <option value="md" selected>Foto mediana</option>
-                <option value="lg">Foto grande</option>
+              <select id="linkImageFit" class="field text-xs" style="width:auto; padding:.4rem .6rem">
+                <option value="cover" selected>Llenar el recuadro</option>
+                <option value="contain">Mostrar completa</option>
               </select>
-              <select id="linkImageFit" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-200 focus:outline-none focus:border-sky-500">
-                <option value="cover" selected>Llenar</option>
-                <option value="contain">Completa</option>
-              </select>
-              <button type="button" id="clearLinkImageBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar</button>
+              <button type="button" id="clearLinkImageBtn" class="text-xs muted hover:text-red-400 hidden">Quitar</button>
             </div>
-          </div>
-
-          <div id="linkPreviewBox" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-900 h-28 relative">
-            <img id="linkPreviewImg" src="" alt="Vista previa del link" class="w-full h-full object-cover" />
           </div>
         </div>
 
-        <!-- Personalización visual del Link (Color, Letra y Tamaño) -->
-        <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/90 space-y-3">
-          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Color, letra y tamaño</p>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Color de tarjeta</label>
-              <select id="linkCardColor" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="inherit">Igual a la carpeta</option>
-                <option value="sky">Celeste (Sky)</option>
-                <option value="indigo">Índigo</option>
-                <option value="emerald">Esmeralda</option>
-                <option value="amber">Ámbar / Dorado</option>
-                <option value="rose">Rosa / Coral</option>
-                <option value="violet">Violeta</option>
-                <option value="slate">Neutro Oscuro</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Color de letra</label>
-              <select id="linkTextColor" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="white">Blanco clásico</option>
-                <option value="sky">Celeste brillante</option>
-                <option value="emerald">Verde menta</option>
-                <option value="amber">Dorado / Ámbar</option>
-                <option value="rose">Rosa claro</option>
-                <option value="violet">Lavanda / Violeta</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Tipo de letra</label>
-              <select id="linkFontFamily" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="sans">Moderna (Inter)</option>
-                <option value="serif">Editorial (Lora Serif)</option>
-                <option value="mono">Código (JetBrains Mono)</option>
-                <option value="rounded">Suave (Nunito)</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-slate-400 mb-1">Tamaño de letra</label>
-              <select id="linkFontSize" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="sm">Chica</option>
-                <option value="base" selected>Normal</option>
-                <option value="lg">Grande</option>
-                <option value="xl">Destacada (XL)</option>
-              </select>
-            </div>
-          </div>
+        <div class="block-box space-y-2">
+          <span class="sec-title">Color de la tarjeta</span>
+          <div id="linkColorSwatches" class="flex flex-wrap gap-2 pt-1"></div>
+          <input type="hidden" id="linkCardColor" value="inherit" />
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Etiquetas separadas por coma (opcional)</label>
-          <input type="text" id="linkTags" placeholder="caba, gestión, drive" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+          <label class="lbl">Etiquetas separadas por coma (opcional)</label>
+          <input type="text" id="linkTags" placeholder="caba, gestión, drive" class="field" />
         </div>
-
-        <label class="flex items-center gap-2 cursor-pointer pt-1">
-          <input type="checkbox" id="linkPinned" class="rounded bg-slate-950 border-slate-700 text-sky-500 focus:ring-0" />
-          <span class="text-sm text-slate-300">Fijar también en el inicio arriba</span>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="linkPinned" style="accent-color: var(--accent)" />
+          <span class="text-sm txt">Fijar arriba en el inicio</span>
         </label>
 
-        <div class="flex items-center justify-between gap-2 pt-4 border-t border-slate-800">
-          <button type="button" id="modalDeleteLinkBtn" onclick="deleteLinkFromModal()" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-red-500/15 hover:bg-red-500/30 text-red-400 transition">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Borrar link</span>
-          </button>
+        <div class="flex items-center justify-between gap-2 pt-4" style="border-top: 1px solid rgba(var(--line), .08)">
+          <button type="button" id="modalDeleteLinkBtn" onclick="deleteLinkFromModal()" class="btn btn-danger text-xs hidden"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Borrar</span></button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" onclick="closeLinkModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
-            <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar</button>
+            <button type="button" onclick="closeLinkModal()" class="btn muted">Cancelar</button>
+            <button type="submit" class="btn btn-accent">Guardar</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal para Agregar / Editar Carpeta con Foto y Tamaño -->
-  <div id="sectionModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
+  <!-- Modal Carpeta -->
+  <div id="sectionModal" class="modal">
+    <div class="box panel-solid">
       <div class="flex items-center justify-between mb-4">
-        <h3 id="sectionModalTitle" class="text-lg font-bold text-white">Nueva Carpeta</h3>
-        <button type="button" onclick="closeSectionModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <h3 id="sectionModalTitle" class="text-lg font-bold txt">Nueva carpeta</h3>
+        <button type="button" onclick="closeSectionModal()" class="muted hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <form id="sectionForm" class="space-y-4">
         <input type="hidden" id="sectionId" />
-        
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de la carpeta</label>
-          <input type="text" id="sectionName" required placeholder="Ej: Vive CABA, Facultad, Teatro..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+          <label class="lbl">Nombre de la carpeta</label>
+          <input type="text" id="sectionName" required placeholder="Ej: Vive CABA, Facultad, Teatro..." class="field" />
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Color de acento</label>
-            <select id="sectionColor" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
-              <option value="sky">Celeste (Sky)</option>
-              <option value="indigo">Índigo</option>
-              <option value="emerald">Esmeralda</option>
-              <option value="amber">Ámbar / Dorado</option>
-              <option value="rose">Rosa / Coral</option>
-              <option value="violet">Violeta</option>
-              <option value="slate">Gris (Slate)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">Ícono</label>
-            <select id="sectionIcon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
-              <option value="folder">Carpeta</option>
-              <option value="newspaper">Diario / Medios</option>
-              <option value="building-2">Edificio / Trabajo</option>
-              <option value="graduation-cap">Estudio / Facultad</option>
-              <option value="user">Personal</option>
-              <option value="sparkles">IA / Herramientas</option>
-              <option value="theater">Cultura / Teatro</option>
-              <option value="music">Música</option>
-              <option value="wallet">Finanzas / Ofertas</option>
-              <option value="bookmark">Marcadores</option>
-            </select>
-          </div>
+        <div>
+          <label class="lbl">Ícono</label>
+          <select id="sectionIcon" class="field">
+            <option value="folder">Carpeta</option>
+            <option value="newspaper">Diario / Medios</option>
+            <option value="building-2">Edificio / Trabajo</option>
+            <option value="graduation-cap">Estudio / Facultad</option>
+            <option value="user">Personal</option>
+            <option value="sparkles">IA / Herramientas</option>
+            <option value="theater">Cultura / Teatro</option>
+            <option value="music">Música</option>
+            <option value="wallet">Finanzas / Ofertas</option>
+            <option value="bookmark">Marcadores</option>
+            <option value="gamepad-2">Juegos</option>
+            <option value="camera">Foto / Video</option>
+          </select>
         </div>
-
-        <div class="pt-3 border-t border-slate-800/80 space-y-3">
-          <label class="block text-xs font-medium text-slate-400">Foto de portada de la carpeta</label>
-          <input type="text" id="sectionCoverUrl" placeholder="Pega URL de imagen (https://...) o sube foto abajo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
-          
-          <div class="flex items-center justify-between gap-2">
-            <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 cursor-pointer transition">
-              <i data-lucide="image-plus" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>Elegir foto desde PC / Celular</span>
+        <div class="block-box space-y-2">
+          <span class="sec-title">Color de la carpeta</span>
+          <div id="sectionColorSwatches" class="flex flex-wrap gap-2 pt-1"></div>
+          <input type="hidden" id="sectionColor" value="lima" />
+        </div>
+        <div class="block-box space-y-3">
+          <span class="sec-title">Foto de portada</span>
+          <div id="coverPreviewBox" class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9; background: rgba(0,0,0,.25)">
+            <img id="coverPreviewImg" src="" alt="" class="w-full h-full object-cover hidden" />
+            <div id="coverPreviewEmpty" class="absolute inset-0 flex flex-col items-center justify-center gap-1 muted text-xs">
+              <i data-lucide="image" class="w-6 h-6"></i><span>Sin foto: se usa el color de la carpeta</span>
+            </div>
+          </div>
+          <input type="text" id="sectionCoverUrl" placeholder="Pegá la URL de una imagen (opcional)" class="field text-xs" />
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="btn btn-ghost text-xs cursor-pointer">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 acc"></i><span>Subir foto</span>
               <input type="file" id="sectionCoverFile" accept="image/*" class="hidden" />
             </label>
-            <button type="button" id="clearCoverBtn" class="text-xs text-slate-400 hover:text-red-400 hidden">Quitar foto</button>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2.5 pt-1">
-            <div>
-              <label class="block text-[11px] font-medium text-slate-400 mb-1">Tamaño / Altura</label>
-              <select id="sectionCoverSize" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="sm">Compacta</option>
-                <option value="md" selected>Mediana</option>
-                <option value="lg">Grande</option>
-                <option value="xl">Extra Grande</option>
+            <div class="flex items-center gap-2">
+              <select id="sectionCoverPos" class="field text-xs" style="width:auto; padding:.4rem .6rem">
+                <option value="top">Encuadre arriba</option>
+                <option value="center" selected>Encuadre centro</option>
+                <option value="bottom">Encuadre abajo</option>
               </select>
+              <button type="button" id="clearCoverBtn" class="text-xs muted hover:text-red-400 hidden">Quitar</button>
             </div>
-
-            <div>
-              <label class="block text-[11px] font-medium text-slate-400 mb-1">Ajuste imagen</label>
-              <select id="sectionCoverFit" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="cover" selected>Llenar (Cover)</option>
-                <option value="contain">Completa (Sin recorte)</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-medium text-slate-400 mb-1">Encuadre</label>
-              <select id="sectionCoverPos" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
-                <option value="top">Arriba</option>
-                <option value="center" selected>Centro</option>
-                <option value="bottom">Abajo</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="coverPreviewBox" class="hidden rounded-xl overflow-hidden border border-slate-800 bg-slate-950 h-44 relative transition-all">
-            <img id="coverPreviewImg" src="" alt="Vista previa" class="w-full h-full object-cover object-center transition-all" />
           </div>
         </div>
-
-        <div class="flex items-center justify-between gap-2 pt-4 border-t border-slate-800">
-          <button type="button" id="modalDeleteSectionBtn" onclick="deleteSectionFromModal()" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-red-500/15 hover:bg-red-500/30 text-red-400 transition">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Borrar carpeta</span>
-          </button>
+        <div class="flex items-center justify-between gap-2 pt-4" style="border-top: 1px solid rgba(var(--line), .08)">
+          <button type="button" id="modalDeleteSectionBtn" onclick="deleteSectionFromModal()" class="btn btn-danger text-xs hidden"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Borrar carpeta</span></button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" onclick="closeSectionModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
-            <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Guardar carpeta</button>
+            <button type="button" onclick="closeSectionModal()" class="btn muted">Cancelar</button>
+            <button type="submit" class="btn btn-accent">Guardar</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal Token de GitHub para Guardado Automático -->
-  <div id="githubModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-bold text-white">Guardado automático en GitHub</h3>
-        <button type="button" onclick="closeGithubModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+  <!-- Modal Apariencia -->
+  <div id="appearanceModal" class="modal">
+    <div class="box panel-solid">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-lg font-bold txt flex items-center gap-2"><i data-lucide="palette" class="w-5 h-5 acc"></i>Apariencia</h3>
+        <button type="button" onclick="closeAppearance(false)" class="muted hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <p class="text-xs text-slate-400 leading-relaxed mb-4">
-        Pega tu <strong>Token de GitHub</strong> una única vez en este navegador. Cada carpeta, foto o link que agregues, edites o muevas se guardará automáticamente en la nube.
+      <div class="space-y-5">
+        <div>
+          <span class="sec-title">Tema</span>
+          <div id="themeGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2"></div>
+        </div>
+        <div>
+          <span class="sec-title">Color principal</span>
+          <div id="accentSwatches" class="flex flex-wrap gap-2 mt-2"></div>
+        </div>
+        <div>
+          <span class="sec-title">Fondo</span>
+          <div class="flex gap-2 mt-2" id="bgTypeOpts"></div>
+          <div id="bgImageBox" class="hidden mt-3 space-y-2">
+            <input type="text" id="bgImageUrl" placeholder="Pegá la URL de una imagen" class="field text-xs" />
+            <label class="btn btn-ghost text-xs cursor-pointer">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 acc"></i><span>Subir imagen de fondo</span>
+              <input type="file" id="bgImageFile" accept="image/*" class="hidden" />
+            </label>
+          </div>
+        </div>
+        <div>
+          <span class="sec-title">Vista de los links</span>
+          <div class="flex gap-2 mt-2" id="viewOpts"></div>
+        </div>
+        <div>
+          <span class="sec-title">Tamaño de letra</span>
+          <div class="flex gap-2 mt-2" id="fontOpts"></div>
+        </div>
+        <div class="flex items-center justify-between block-box">
+          <div>
+            <p class="text-sm font-semibold txt">Efecto vidrio</p>
+            <p class="text-xs muted">Tarjetas semitransparentes sobre el fondo</p>
+          </div>
+          <button type="button" id="glassSwitch" class="switch" onclick="setAppearance({glass: !draft.glass})"></button>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-5 mt-5" style="border-top: 1px solid rgba(var(--line), .08)">
+        <button type="button" onclick="resetAppearance()" class="text-xs muted hover:opacity-70">Volver al original</button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeAppearance(false)" class="btn muted">Cancelar</button>
+          <button type="button" onclick="closeAppearance(true)" class="btn btn-accent">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Token GitHub -->
+  <div id="githubModal" class="modal">
+    <div class="box panel-solid" style="max-width: 28rem">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-bold txt">Guardado automático en GitHub</h3>
+        <button type="button" onclick="closeGithubModal()" class="muted hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <p class="text-xs muted leading-relaxed mb-4">
+        Pegá tu <strong class="txt">Token de GitHub</strong> una única vez en este navegador. Cada carpeta, foto o link que agregues, edites o muevas se guardará automáticamente en la nube.
       </p>
       <form id="githubForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">GitHub Token (github_pat_... o ghp_...)</label>
-          <input type="password" id="githubTokenInput" required placeholder="github_pat_..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500" />
+          <label class="lbl">GitHub Token (github_pat_... o ghp_...)</label>
+          <input type="password" id="githubTokenInput" required placeholder="github_pat_..." class="field" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeGithubModal()" class="px-4 py-2 rounded-xl text-sm text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">Activar y Guardar</button>
+          <button type="button" onclick="closeGithubModal()" class="btn muted">Cancelar</button>
+          <button type="submit" class="btn btn-accent">Activar y guardar</button>
         </div>
       </form>
     </div>
@@ -455,16 +558,88 @@
     const GITHUB_OWNER = "LadoB-tech";
     const GITHUB_REPO  = "Central-de-Links-Personal";
     const JSON_FILE    = "central-de-links-2026-11-25.json";
+    const DATA_REPO    = "Central-de-Links-Personal"; // repo donde se guardan los links (puede ser privado)
     // ==========================================
 
     const STORAGE_KEY = 'central_links_personal_v4';
     const AUTH_KEY    = 'central_links_unlocked_v4';
     const TOKEN_KEY   = 'central_links_gh_token';
 
+    // ---------- Colores ----------
+    const COLORS = {
+      lima: '#d4ea2e', sky: '#38bdf8', indigo: '#818cf8', violet: '#a78bfa', rose: '#fb7185',
+      red: '#ef4444', amber: '#fbbf24', emerald: '#34d399', teal: '#2dd4bf', slate: '#94a3b8'
+    };
+    const COLOR_NAMES = { lima: 'Lima', sky: 'Celeste', indigo: 'Índigo', violet: 'Violeta', rose: 'Rosa', red: 'Rojo', amber: 'Dorado', emerald: 'Verde', teal: 'Turquesa', slate: 'Gris' };
+    function colorHex(c) {
+      if (!c || c === 'inherit') return null;
+      if (c.startsWith('#')) return c;
+      return COLORS[c] || COLORS.slate;
+    }
+
+    // ---------- Temas ----------
+    const THEMES = {
+      lima:    { name: 'Lima nocturno', accent: '#d4ea2e', bg: '#06070b', bg2: '#0c3442', surface: '18, 20, 28', line: '255, 255, 255', text: '#f1f5f9', muted: '#94a3b8' },
+      violeta: { name: 'Violeta',       accent: '#a78bfa', bg: '#09060f', bg2: '#2b1257', surface: '22, 17, 34', line: '255, 255, 255', text: '#f5f3ff', muted: '#a5a0bd' },
+      vive:    { name: 'Rojo VIVE',     accent: '#ff3b3b', bg: '#080808', bg2: '#3d0b0b', surface: '24, 20, 20', line: '255, 255, 255', text: '#fafafa', muted: '#a3a3a3' },
+      claro:   { name: 'Claro',         accent: '#4f46e5', bg: '#eef0f5', bg2: '#d9e2ff', surface: '255, 255, 255', line: '15, 23, 42', text: '#0f172a', muted: '#5b6474' }
+    };
+    const DEFAULT_SETTINGS = { theme: 'lima', accent: null, bgType: 'gradient', bgImage: '', view: 'large', fontSize: 'md', glass: true };
+    const FONT_PX = { sm: '14.5px', md: '16px', lg: '17.5px' };
+
+    function onAccent(hex) {
+      const h = hex.replace('#', '');
+      const r = parseInt(h.substr(0, 2), 16), g = parseInt(h.substr(2, 2), 16), b = parseInt(h.substr(4, 2), 16);
+      return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#0b0d05' : '#ffffff';
+    }
+
+    function applyAppearance(s) {
+      const t = THEMES[s.theme] || THEMES.lima;
+      const accent = s.accent || t.accent;
+      const root = document.documentElement.style;
+      root.setProperty('--accent', accent);
+      root.setProperty('--on-accent', onAccent(accent));
+      root.setProperty('--bg', t.bg);
+      root.setProperty('--bg2', t.bg2);
+      root.setProperty('--surface', t.surface);
+      root.setProperty('--line', t.line);
+      root.setProperty('--text', t.text);
+      root.setProperty('--muted', t.muted);
+      root.setProperty('--panel-a', s.glass ? (s.theme === 'claro' ? '.7' : '.6') : '1');
+      document.documentElement.style.fontSize = FONT_PX[s.fontSize] || '16px';
+      document.body.classList.toggle('no-glass', !s.glass);
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', t.bg);
+
+      const layer = document.getElementById('bgLayer');
+      const isLight = s.theme === 'claro';
+      if (s.bgType === 'image' && s.bgImage) {
+        const veil = isLight ? 'rgba(238,240,245,.55), rgba(238,240,245,.8)' : 'rgba(0,0,0,.45), rgba(0,0,0,.75)';
+        layer.style.background = `linear-gradient(${veil}), url("${s.bgImage}") center / cover no-repeat, ${t.bg}`;
+      } else if (s.bgType === 'solid') {
+        layer.style.background = t.bg;
+      } else {
+        layer.style.background = `radial-gradient(900px 520px at 10% -5%, ${t.bg2}, transparent 65%), radial-gradient(700px 420px at 100% 10%, color-mix(in srgb, ${accent} 14%, transparent), transparent 65%), radial-gradient(800px 500px at 50% 110%, color-mix(in srgb, ${t.bg2} 70%, transparent), transparent 70%), ${t.bg}`;
+      }
+      document.querySelectorAll('.links-grid').forEach(g => setGridView(g, s.view));
+    }
+
+    function setGridView(el, view) {
+      el.classList.remove('view-large', 'view-compact', 'view-list');
+      el.classList.add('view-' + view);
+      el.className = el.className.replace(/\bgrid-cols-\S+|\bsm:grid-cols-\S+|\blg:grid-cols-\S+|\bgap-\S+/g, '').trim();
+      el.classList.add('grid');
+      const cols = view === 'large' ? ['grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-5']
+                 : view === 'compact' ? ['grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-3']
+                 : ['grid-cols-1', 'lg:grid-cols-2', 'gap-2'];
+      cols.forEach(c => el.classList.add(c));
+    }
+
+    function getSettings() { return Object.assign({}, DEFAULT_SETTINGS, appData.settings || {}); }
+
+    // ---------- Nube ----------
     function setCloudStatus(state, text) {
       const dot = document.getElementById('cloudStatusDot');
-      const label = document.getElementById('cloudStatusText');
-      label.textContent = text;
+      document.getElementById('cloudStatusText').textContent = text;
       dot.className = 'w-2 h-2 rounded-full ' + (
         state === 'ok' ? 'bg-emerald-400' :
         state === 'saving' ? 'bg-sky-400 animate-ping' :
@@ -475,6 +650,7 @@
     function unlockApp(persist = false) {
       document.getElementById('lockScreen').classList.add('hidden');
       document.getElementById('appContent').classList.remove('hidden');
+      document.getElementById('bottomBar').classList.remove('hidden');
       sessionStorage.setItem(AUTH_KEY, 'true');
       if (persist) localStorage.setItem(AUTH_KEY, 'true');
     }
@@ -483,6 +659,7 @@
       sessionStorage.removeItem(AUTH_KEY);
       localStorage.removeItem(AUTH_KEY);
       document.getElementById('appContent').classList.add('hidden');
+      document.getElementById('bottomBar').classList.add('hidden');
       document.getElementById('lockScreen').classList.remove('hidden');
       document.getElementById('passwordInput').value = '';
     }
@@ -502,69 +679,9 @@
         document.getElementById('lockError').classList.remove('hidden');
       }
     });
-
     document.getElementById('lockBtn').addEventListener('click', lockApp);
 
-    const colorMap = {
-      sky: { badge: 'bg-sky-500/20 text-sky-300 border-sky-500/30', gradient: 'from-sky-900/60 via-slate-900 to-slate-950', hover: 'hover:border-sky-500/60', icon: 'text-sky-400', border: 'border-sky-500/30', cardBg: 'bg-sky-950/25' },
-      indigo: { badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30', gradient: 'from-indigo-900/60 via-slate-900 to-slate-950', hover: 'hover:border-indigo-500/60', icon: 'text-indigo-400', border: 'border-indigo-500/30', cardBg: 'bg-indigo-950/25' },
-      emerald: { badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', gradient: 'from-emerald-900/60 via-slate-900 to-slate-950', hover: 'hover:border-emerald-500/60', icon: 'text-emerald-400', border: 'border-emerald-500/30', cardBg: 'bg-emerald-950/25' },
-      amber: { badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30', gradient: 'from-amber-900/60 via-slate-900 to-slate-950', hover: 'hover:border-amber-500/60', icon: 'text-amber-400', border: 'border-amber-500/30', cardBg: 'bg-amber-950/25' },
-      rose: { badge: 'bg-rose-500/20 text-rose-300 border-rose-500/30', gradient: 'from-rose-900/60 via-slate-900 to-slate-950', hover: 'hover:border-rose-500/60', icon: 'text-rose-400', border: 'border-rose-500/30', cardBg: 'bg-rose-950/25' },
-      violet: { badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30', gradient: 'from-violet-900/60 via-slate-900 to-slate-950', hover: 'hover:border-violet-500/60', icon: 'text-violet-400', border: 'border-violet-500/30', cardBg: 'bg-violet-950/25' },
-      slate: { badge: 'bg-slate-500/20 text-slate-300 border-slate-500/30', gradient: 'from-slate-800/70 via-slate-900 to-slate-950', hover: 'hover:border-slate-500/60', icon: 'text-slate-300', border: 'border-slate-800/90', cardBg: 'bg-slate-900/70' }
-    };
-
-    const textColorMap = {
-      white: 'text-slate-100',
-      sky: 'text-sky-300',
-      emerald: 'text-emerald-300',
-      amber: 'text-amber-300',
-      rose: 'text-rose-300',
-      violet: 'text-violet-300'
-    };
-
-    const fontFamilyMap = {
-      sans: 'font-custom-sans',
-      serif: 'font-custom-serif',
-      mono: 'font-custom-mono',
-      rounded: 'font-custom-rounded'
-    };
-
-    const fontSizeMap = {
-      sm: 'text-sm',
-      base: 'text-base',
-      lg: 'text-lg',
-      xl: 'text-xl'
-    };
-
-    const linkImgSizeMap = {
-      sm: 'h-24',
-      md: 'h-36',
-      lg: 'h-52'
-    };
-
-    const coverHeightMap = {
-      sm: 'h-32',
-      md: 'h-44',
-      lg: 'h-60',
-      xl: 'h-80'
-    };
-
-    const detailBannerHeightMap = {
-      sm: 'h-36 sm:h-44',
-      md: 'h-44 sm:h-56',
-      lg: 'h-60 sm:h-72',
-      xl: 'h-72 sm:h-96'
-    };
-
-    const coverPosMap = {
-      top: 'object-top',
-      center: 'object-center',
-      bottom: 'object-bottom'
-    };
-
-    let appData = { sections: [], links: [] };
+    let appData = { sections: [], links: [], settings: {} };
     let activeFolderId = null;
     let editMode = false;
     let isSyncing = false;
@@ -574,7 +691,7 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       const token = localStorage.getItem(TOKEN_KEY);
       if (!token) {
-        setCloudStatus('warn', 'Falta Token (clic aquí)');
+        setCloudStatus('warn', 'Falta Token (tocá acá)');
         openGithubModal();
         return;
       }
@@ -582,54 +699,33 @@
     }
 
     async function pushToGithub(token) {
-      if (isSyncing) {
-        pendingSync = true;
-        return;
-      }
+      if (isSyncing) { pendingSync = true; return; }
       isSyncing = true;
       setCloudStatus('saving', 'Guardando en nube...');
-      const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${JSON_FILE}`;
-
+      const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${DATA_REPO}/contents/${JSON_FILE}`;
       try {
         const getRes = await fetch(apiUrl + '?t=' + Date.now(), {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github+json'
-          }
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
         });
-
         let sha = null;
         if (getRes.ok) {
-          const fileInfo = await getRes.json();
-          sha = fileInfo.sha;
+          sha = (await getRes.json()).sha;
         } else if (getRes.status === 401 || getRes.status === 403) {
           throw new Error('Token inválido o sin permiso Contents: Read & Write');
         }
-
         const jsonString = JSON.stringify(appData, null, 2);
         const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-
-        const body = {
-          message: 'Actualización automática desde Central de Links',
-          content: base64Content
-        };
+        const body = { message: 'Actualización automática desde Central de Links', content: base64Content };
         if (sha) body.sha = sha;
-
         const putRes = await fetch(apiUrl, {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github+json',
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
-
         if (!putRes.ok) {
           const errData = await putRes.json();
           throw new Error(errData.message || 'Error al guardar en GitHub');
         }
-
         setCloudStatus('ok', 'Guardado en nube');
       } catch (err) {
         setCloudStatus('error', 'Error al guardar');
@@ -640,525 +736,412 @@
         }
       } finally {
         isSyncing = false;
-        if (pendingSync) {
-          pendingSync = false;
-          pushToGithub(token);
-        }
+        if (pendingSync) { pendingSync = false; pushToGithub(token); }
       }
     }
 
-    function openGithubModal() {
-      document.getElementById('githubModal').classList.remove('hidden');
-      document.getElementById('githubModal').classList.add('flex');
-    }
-
-    function closeGithubModal() {
-      document.getElementById('githubModal').classList.add('hidden');
-      document.getElementById('githubModal').classList.remove('flex');
-    }
-
+    function openModal(id) { document.getElementById(id).classList.add('open'); lucide.createIcons(); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openGithubModal() { openModal('githubModal'); }
+    function closeGithubModal() { closeModal('githubModal'); }
     document.getElementById('syncGithubBtn').addEventListener('click', openGithubModal);
-
     document.getElementById('githubForm').addEventListener('submit', e => {
       e.preventDefault();
       const token = document.getElementById('githubTokenInput').value.trim();
       if (!token) return;
       localStorage.setItem(TOKEN_KEY, token);
       closeGithubModal();
-      pushToGithub(token);
+      setCloudStatus('ok', 'Nube conectada');
+      if (appData.sections.length === 0) {
+        fetchRemote().then(data => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); loadData(data); }).catch(() => alert('No pude leer tus links con ese token. Revisá que tenga permiso sobre el repo de datos.'));
+      } else {
+        pushToGithub(token);
+      }
     });
 
+    // ---------- Navegación ----------
     function openFolder(sectionId) {
       activeFolderId = sectionId;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       render();
     }
-
-    function goHome() {
-      activeFolderId = null;
-      render();
+    function goHome() { activeFolderId = null; render(); }
+    function getQuery() {
+      return (document.getElementById('searchInput').value || document.getElementById('searchInputMobile').value || '').toLowerCase().trim();
     }
-
     function clearSearch() {
       document.getElementById('searchInput').value = '';
+      document.getElementById('searchInputMobile').value = '';
       render();
     }
+    function focusSearch() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => document.getElementById('searchInputMobile').focus(), 250);
+    }
+    ['searchInput', 'searchInputMobile'].forEach(id => {
+      document.getElementById(id).addEventListener('input', e => {
+        const other = id === 'searchInput' ? 'searchInputMobile' : 'searchInput';
+        document.getElementById(other).value = e.target.value;
+        render();
+      });
+    });
 
-    // --- Foto y vista previa en Links ---
-    function updateLinkPreview(url) {
-      const box = document.getElementById('linkPreviewBox');
-      const img = document.getElementById('linkPreviewImg');
-      const clearBtn = document.getElementById('clearLinkImageBtn');
-      const fitVal = document.getElementById('linkImageFit').value || 'cover';
-
-      if (url) {
-        img.src = url;
-        img.className = `w-full h-full ${fitVal === 'contain' ? 'object-contain p-2 bg-slate-950' : 'object-cover'}`;
-        box.classList.remove('hidden');
-        clearBtn.classList.remove('hidden');
-      } else {
-        img.src = '';
-        box.classList.add('hidden');
-        clearBtn.classList.add('hidden');
+    // ---------- Selector de colores ----------
+    function buildSwatches(containerId, hiddenId, includeInherit) {
+      const box = document.getElementById(containerId);
+      const current = document.getElementById(hiddenId).value;
+      let html = '';
+      if (includeInherit) {
+        html += `<button type="button" class="sw inherit ${current === 'inherit' ? 'on' : ''}" title="Igual a la carpeta" onclick="pickColor('${containerId}','${hiddenId}',${includeInherit},'inherit')"></button>`;
       }
+      Object.keys(COLORS).forEach(k => {
+        html += `<button type="button" class="sw ${current === k ? 'on' : ''}" style="background:${COLORS[k]}" title="${COLOR_NAMES[k]}" onclick="pickColor('${containerId}','${hiddenId}',${includeInherit},'${k}')"></button>`;
+      });
+      const isCustom = current && current.startsWith('#');
+      html += `<label class="sw sw-custom ${isCustom ? 'on' : ''}" title="Elegir cualquier color" ${isCustom ? `style="background:${current}"` : ''}>
+                 <input type="color" value="${isCustom ? current : '#d4ea2e'}" onchange="pickColor('${containerId}','${hiddenId}',${includeInherit},this.value)" />
+               </label>`;
+      box.innerHTML = html;
+    }
+    function pickColor(containerId, hiddenId, includeInherit, value) {
+      document.getElementById(hiddenId).value = value;
+      buildSwatches(containerId, hiddenId, includeInherit);
+      if (hiddenId === 'sectionColor') updateCoverPreview(document.getElementById('sectionCoverUrl').value.trim());
     }
 
+    // ---------- Compresión de imágenes ----------
+    function compressImage(file, maxWidth, cb) {
+      const reader = new FileReader();
+      reader.onload = event => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const scale = Math.min(1, maxWidth / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          cb(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ---------- Foto de links ----------
+    function updateLinkPreview(url) {
+      const img = document.getElementById('linkPreviewImg');
+      const empty = document.getElementById('linkPreviewEmpty');
+      const fit = document.getElementById('linkImageFit').value || 'cover';
+      if (url) {
+        img.src = url;
+        img.className = 'w-full h-full ' + (fit === 'contain' ? 'object-contain p-2' : 'object-cover');
+        empty.classList.add('hidden');
+        document.getElementById('clearLinkImageBtn').classList.remove('hidden');
+      } else {
+        img.src = ''; img.className = 'hidden';
+        empty.classList.remove('hidden');
+        document.getElementById('clearLinkImageBtn').classList.add('hidden');
+      }
+    }
     function generateLinkPreview() {
       const rawUrl = document.getElementById('linkUrl').value.trim();
-      if (!rawUrl) {
-        alert('Primero escribe o pega la URL del link.');
-        return;
-      }
+      if (!rawUrl) { alert('Primero escribí o pegá la URL del link.'); return; }
       try {
         const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl);
-        // Usa servicio de captura de vista previa con respaldo automático a favicon HD
         const previewUrl = `https://image.thum.io/get/width/800/crop/450/${parsed.href}`;
         document.getElementById('linkImageUrl').value = previewUrl;
         document.getElementById('linkImageFit').value = 'cover';
         updateLinkPreview(previewUrl);
-      } catch {
-        alert('Ingresa una URL válida (por ejemplo https://ejemplo.com).');
-      }
+      } catch { alert('Ingresá una URL válida (por ejemplo https://ejemplo.com).'); }
     }
-
-    document.getElementById('linkImageUrl').addEventListener('input', e => {
-      updateLinkPreview(e.target.value.trim());
-    });
-
-    document.getElementById('linkImageFit').addEventListener('change', () => {
-      updateLinkPreview(document.getElementById('linkImageUrl').value.trim());
-    });
-
+    document.getElementById('linkImageUrl').addEventListener('input', e => updateLinkPreview(e.target.value.trim()));
+    document.getElementById('linkImageFit').addEventListener('change', () => updateLinkPreview(document.getElementById('linkImageUrl').value.trim()));
     document.getElementById('clearLinkImageBtn').addEventListener('click', () => {
       document.getElementById('linkImageUrl').value = '';
       document.getElementById('linkImageFile').value = '';
       updateLinkPreview('');
     });
-
     document.getElementById('linkImageFile').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = event => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxWidth = 800;
-          const scale = Math.min(1, maxWidth / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
-          document.getElementById('linkImageUrl').value = compressedDataUrl;
-          updateLinkPreview(compressedDataUrl);
-        };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // --- Foto y vista previa en Carpetas ---
-    function updateCoverPreview(url) {
-      const box = document.getElementById('coverPreviewBox');
-      const img = document.getElementById('coverPreviewImg');
-      const clearBtn = document.getElementById('clearCoverBtn');
-      const sizeVal = document.getElementById('sectionCoverSize').value || 'md';
-      const fitVal = document.getElementById('sectionCoverFit').value || 'cover';
-      const posVal = document.getElementById('sectionCoverPos').value || 'center';
-
-      if (url) {
-        img.src = url;
-        box.className = `rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative transition-all ${coverHeightMap[sizeVal]}`;
-        img.className = `w-full h-full ${fitVal === 'contain' ? 'object-contain p-1' : 'object-cover'} ${coverPosMap[posVal]} transition-all`;
-        box.classList.remove('hidden');
-        clearBtn.classList.remove('hidden');
-      } else {
-        img.src = '';
-        box.classList.add('hidden');
-        clearBtn.classList.add('hidden');
-      }
-    }
-
-    document.getElementById('sectionCoverUrl').addEventListener('input', e => {
-      updateCoverPreview(e.target.value.trim());
-    });
-
-    ['sectionCoverSize', 'sectionCoverFit', 'sectionCoverPos'].forEach(id => {
-      document.getElementById(id).addEventListener('change', () => {
-        updateCoverPreview(document.getElementById('sectionCoverUrl').value.trim());
+      compressImage(file, 800, url => {
+        document.getElementById('linkImageUrl').value = url;
+        updateLinkPreview(url);
       });
     });
 
+    // ---------- Foto de carpetas ----------
+    const coverPosMap = { top: 'object-top', center: 'object-center', bottom: 'object-bottom' };
+    function updateCoverPreview(url) {
+      const box = document.getElementById('coverPreviewBox');
+      const img = document.getElementById('coverPreviewImg');
+      const empty = document.getElementById('coverPreviewEmpty');
+      const pos = document.getElementById('sectionCoverPos').value || 'center';
+      const c = colorHex(document.getElementById('sectionColor').value) || COLORS.lima;
+      box.style.background = `linear-gradient(135deg, color-mix(in srgb, ${c} 45%, rgb(var(--surface))), rgb(var(--surface)))`;
+      if (url) {
+        img.src = url;
+        img.className = `w-full h-full object-cover ${coverPosMap[pos]}`;
+        empty.classList.add('hidden');
+        document.getElementById('clearCoverBtn').classList.remove('hidden');
+      } else {
+        img.src = ''; img.className = 'hidden';
+        empty.classList.remove('hidden');
+        document.getElementById('clearCoverBtn').classList.add('hidden');
+      }
+    }
+    document.getElementById('sectionCoverUrl').addEventListener('input', e => updateCoverPreview(e.target.value.trim()));
+    document.getElementById('sectionCoverPos').addEventListener('change', () => updateCoverPreview(document.getElementById('sectionCoverUrl').value.trim()));
     document.getElementById('clearCoverBtn').addEventListener('click', () => {
       document.getElementById('sectionCoverUrl').value = '';
       document.getElementById('sectionCoverFile').value = '';
       updateCoverPreview('');
     });
-
     document.getElementById('sectionCoverFile').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = event => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxWidth = 1000;
-          const scale = Math.min(1, maxWidth / img.width);
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
-          document.getElementById('sectionCoverUrl').value = compressedDataUrl;
-          updateCoverPreview(compressedDataUrl);
-        };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+      compressImage(file, 1000, url => {
+        document.getElementById('sectionCoverUrl').value = url;
+        updateCoverPreview(url);
+      });
     });
 
-    // --- Gestión de Carpetas ---
+    // ---------- Carpetas ----------
     function moveSection(sectionId, direction, event) {
       if (event) event.stopPropagation();
       const idx = appData.sections.findIndex(s => s.id === sectionId);
       const targetIdx = idx + direction;
       if (idx === -1 || targetIdx < 0 || targetIdx >= appData.sections.length) return;
-      const temp = appData.sections[idx];
-      appData.sections[idx] = appData.sections[targetIdx];
-      appData.sections[targetIdx] = temp;
+      [appData.sections[idx], appData.sections[targetIdx]] = [appData.sections[targetIdx], appData.sections[idx]];
       render();
       persistChanges();
     }
-
     function deleteSection(sectionId, event) {
       if (event) event.stopPropagation();
       const sec = appData.sections.find(s => s.id === sectionId);
       if (!sec) return;
       const count = appData.links.filter(l => l.sectionId === sectionId).length;
-      const msg = count > 0
-        ? `¿Eliminar la carpeta "${sec.name}" junto con sus ${count} enlaces?`
-        : `¿Eliminar la carpeta vacía "${sec.name}"?`;
-      if (!confirm(msg)) return;
+      const backup = { sections: appData.sections.slice(), links: appData.links.slice() };
       appData.sections = appData.sections.filter(s => s.id !== sectionId);
       appData.links = appData.links.filter(l => l.sectionId !== sectionId);
       if (activeFolderId === sectionId) activeFolderId = null;
       closeSectionModal();
       render();
       persistChanges();
+      showToast(`Borraste la carpeta "${sec.name}"${count ? ` y sus ${count} links` : ''}`, () => {
+        appData.sections = backup.sections;
+        appData.links = backup.links;
+        render();
+        persistChanges();
+      });
     }
-
     function deleteSectionFromModal() {
       const id = document.getElementById('sectionId').value;
       if (id) deleteSection(id);
     }
-
     function openSectionModalById(sectionId, event = null) {
       if (event) event.stopPropagation();
-      const section = appData.sections.find(s => s.id === sectionId);
-      openSectionModal(section || null, event);
+      openSectionModal(appData.sections.find(s => s.id === sectionId) || null, event);
     }
-
     function openSectionModal(section = null, event = null) {
       if (event) event.stopPropagation();
-      const modal = document.getElementById('sectionModal');
       const delBtn = document.getElementById('modalDeleteSectionBtn');
       document.getElementById('sectionCoverFile').value = '';
-
       if (section) {
-        document.getElementById('sectionModalTitle').textContent = 'Editar Carpeta y Foto';
+        document.getElementById('sectionModalTitle').textContent = 'Editar carpeta';
         document.getElementById('sectionId').value = section.id;
         document.getElementById('sectionName').value = section.name;
-        document.getElementById('sectionColor').value = section.color || 'sky';
+        document.getElementById('sectionColor').value = section.color || 'lima';
         document.getElementById('sectionIcon').value = section.icon || 'folder';
         document.getElementById('sectionCoverUrl').value = section.coverImage || '';
-        document.getElementById('sectionCoverSize').value = section.coverSize || 'md';
-        document.getElementById('sectionCoverFit').value = section.coverFit || 'cover';
         document.getElementById('sectionCoverPos').value = section.coverPos || 'center';
-        updateCoverPreview(section.coverImage || '');
         delBtn.classList.remove('hidden');
-        delBtn.classList.add('inline-flex');
       } else {
-        document.getElementById('sectionModalTitle').textContent = 'Nueva Carpeta';
+        document.getElementById('sectionModalTitle').textContent = 'Nueva carpeta';
         document.getElementById('sectionForm').reset();
         document.getElementById('sectionId').value = '';
-        document.getElementById('sectionCoverSize').value = 'md';
-        document.getElementById('sectionCoverFit').value = 'cover';
+        document.getElementById('sectionColor').value = 'lima';
         document.getElementById('sectionCoverPos').value = 'center';
-        updateCoverPreview('');
         delBtn.classList.add('hidden');
-        delBtn.classList.remove('inline-flex');
       }
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      lucide.createIcons();
+      buildSwatches('sectionColorSwatches', 'sectionColor', false);
+      updateCoverPreview(document.getElementById('sectionCoverUrl').value.trim());
+      openModal('sectionModal');
     }
+    function closeSectionModal() { closeModal('sectionModal'); }
 
-    function closeSectionModal() {
-      const modal = document.getElementById('sectionModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    // --- Gestión de Links ---
+    // ---------- Links ----------
     function moveLink(linkId, direction, event = null) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
+      if (event) { event.preventDefault(); event.stopPropagation(); }
       const idx = appData.links.findIndex(l => l.id === linkId);
       if (idx === -1) return;
-      const currentLink = appData.links[idx];
-      const sameSecIndices = appData.links
-        .map((l, i) => l.sectionId === currentLink.sectionId ? i : -1)
-        .filter(i => i !== -1);
-      const posInSec = sameSecIndices.indexOf(idx);
-      const targetPosInSec = posInSec + direction;
-      if (targetPosInSec < 0 || targetPosInSec >= sameSecIndices.length) return;
-      const targetIdx = sameSecIndices[targetPosInSec];
-      const temp = appData.links[idx];
-      appData.links[idx] = appData.links[targetIdx];
-      appData.links[targetIdx] = temp;
+      const cur = appData.links[idx];
+      const same = appData.links.map((l, i) => l.sectionId === cur.sectionId ? i : -1).filter(i => i !== -1);
+      const pos = same.indexOf(idx) + direction;
+      if (pos < 0 || pos >= same.length) return;
+      const targetIdx = same[pos];
+      [appData.links[idx], appData.links[targetIdx]] = [appData.links[targetIdx], appData.links[idx]];
       render();
       persistChanges();
     }
-
     function togglePin(linkId, event = null) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
+      if (event) { event.preventDefault(); event.stopPropagation(); }
       const link = appData.links.find(l => l.id === linkId);
       if (!link) return;
       link.pinned = !link.pinned;
       render();
       persistChanges();
     }
-
     function deleteLink(linkId, event = null) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      if (!confirm('¿Borrar este enlace?')) return;
-      appData.links = appData.links.filter(l => l.id !== linkId);
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      const idx = appData.links.findIndex(l => l.id === linkId);
+      if (idx === -1) return;
+      const removed = appData.links[idx];
+      appData.links.splice(idx, 1);
       closeLinkModal();
       render();
       persistChanges();
+      showToast(`Borraste "${removed.title}"`, () => {
+        appData.links.splice(idx, 0, removed);
+        render();
+        persistChanges();
+      });
     }
-
     function deleteLinkFromModal() {
       const id = document.getElementById('linkId').value;
       if (id) deleteLink(id);
     }
-
     function openLinkModalById(linkId, event = null) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      const link = appData.links.find(l => l.id === linkId);
-      openLinkModal(link || null);
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      openLinkModal(appData.links.find(l => l.id === linkId) || null);
     }
-
     function openLinkModal(link = null, defaultSectionId = null) {
       if (appData.sections.length === 0) {
-        alert('Primero crea al menos una carpeta para guardar el enlace.');
+        alert('Primero creá al menos una carpeta para guardar el enlace.');
         openSectionModal();
         return;
       }
-      const modal = document.getElementById('linkModal');
       const select = document.getElementById('linkSection');
       const delBtn = document.getElementById('modalDeleteLinkBtn');
       select.innerHTML = appData.sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
       document.getElementById('linkImageFile').value = '';
-
       if (link) {
-        document.getElementById('modalTitle').textContent = 'Editar / Mover Link';
+        document.getElementById('modalTitle').textContent = 'Editar link';
         document.getElementById('linkId').value = link.id;
         select.value = link.sectionId;
         document.getElementById('linkTitle').value = link.title;
         document.getElementById('linkUrl').value = link.url;
         document.getElementById('linkDesc').value = link.description || '';
         document.getElementById('linkImageUrl').value = link.imageUrl || '';
-        document.getElementById('linkImageSize').value = link.imageSize || 'md';
         document.getElementById('linkImageFit').value = link.imageFit || 'cover';
         document.getElementById('linkCardColor').value = link.cardColor || 'inherit';
-        document.getElementById('linkTextColor').value = link.textColor || 'white';
-        document.getElementById('linkFontFamily').value = link.fontFamily || 'sans';
-        document.getElementById('linkFontSize').value = link.fontSize || 'base';
         document.getElementById('linkTags').value = (link.tags || []).join(', ');
         document.getElementById('linkPinned').checked = !!link.pinned;
-        updateLinkPreview(link.imageUrl || '');
         delBtn.classList.remove('hidden');
-        delBtn.classList.add('inline-flex');
       } else {
-        document.getElementById('modalTitle').textContent = 'Nuevo Link';
+        document.getElementById('modalTitle').textContent = 'Nuevo link';
         document.getElementById('linkForm').reset();
         document.getElementById('linkId').value = '';
-        document.getElementById('linkImageSize').value = 'md';
         document.getElementById('linkImageFit').value = 'cover';
         document.getElementById('linkCardColor').value = 'inherit';
-        document.getElementById('linkTextColor').value = 'white';
-        document.getElementById('linkFontFamily').value = 'sans';
-        document.getElementById('linkFontSize').value = 'base';
-        updateLinkPreview('');
         delBtn.classList.add('hidden');
-        delBtn.classList.remove('inline-flex');
-        if (defaultSectionId) {
-          select.value = defaultSectionId;
-        } else if (activeFolderId) {
-          select.value = activeFolderId;
-        }
+        if (defaultSectionId) select.value = defaultSectionId;
+        else if (activeFolderId) select.value = activeFolderId;
       }
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      lucide.createIcons();
+      buildSwatches('linkColorSwatches', 'linkCardColor', true);
+      updateLinkPreview(document.getElementById('linkImageUrl').value.trim());
+      openModal('linkModal');
+    }
+    function closeLinkModal() { closeModal('linkModal'); }
+
+    function domainOf(url) {
+      try { return new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace(/^www\./, ''); } catch { return ''; }
     }
 
-    function closeLinkModal() {
-      const modal = document.getElementById('linkModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
+    // ---------- Tarjetas ----------
     function createFolderCard(section) {
-      const theme = colorMap[section.color] || colorMap.slate;
+      const c = colorHex(section.color) || COLORS.slate;
       const count = appData.links.filter(l => l.sectionId === section.id).length;
-      const heightClass = coverHeightMap[section.coverSize || 'md'] || 'h-44';
-      const fitClass = (section.coverFit === 'contain') ? 'object-contain p-2' : 'object-cover group-hover:scale-105';
-      const posClass = coverPosMap[section.coverPos || 'center'] || 'object-center';
-
-      const visualHeader = section.coverImage
-        ? `<img src="${section.coverImage}" alt="${section.name}" class="w-full h-full ${fitClass} ${posClass} transition-transform duration-500" />`
-        : `<div class="w-full h-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center">
-             <i data-lucide="${section.icon || 'folder'}" class="w-12 h-12 ${theme.icon} opacity-60 group-hover:scale-110 transition-transform duration-300"></i>
+      const pos = coverPosMap[section.coverPos || 'center'] || 'object-center';
+      const visual = section.coverImage
+        ? `<img src="${section.coverImage}" alt="" class="${pos}" />`
+        : `<div class="w-full h-full flex items-center justify-center" style="background: radial-gradient(120% 90% at 25% 10%, color-mix(in srgb, ${c} 55%, transparent), transparent 70%), linear-gradient(135deg, color-mix(in srgb, ${c} 25%, rgb(var(--surface))), rgb(var(--surface)))">
+             <i data-lucide="${section.icon || 'folder'}" class="w-14 h-14" style="color:${c}; opacity:.75"></i>
            </div>`;
-
       const orderButtons = editMode ? `
-        <button onclick="moveSection('${section.id}', -1, event)" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300" title="Mover antes">
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        </button>
-        <button onclick="moveSection('${section.id}', 1, event)" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300" title="Mover después">
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-        </button>
-        <button onclick="deleteSection('${section.id}', event)" class="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/35 text-red-400" title="Eliminar carpeta">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-        </button>
-      ` : '';
-
+        <button onclick="moveSection('${section.id}', -1, event)" class="mini" title="Mover antes"><i data-lucide="arrow-left" class="w-3.5 h-3.5"></i></button>
+        <button onclick="moveSection('${section.id}', 1, event)" class="mini" title="Mover después"><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
+        <button onclick="deleteSection('${section.id}', event)" class="mini" style="color:#f87171" title="Eliminar carpeta"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>` : '';
       return `
-        <div onclick="openFolder('${section.id}')" 
-             class="group relative rounded-3xl bg-slate-900 border border-slate-800 ${theme.hover} overflow-hidden cursor-pointer shadow-lg shadow-black/30 transition-all duration-300 flex flex-col">
-          
-          <div class="absolute top-3 right-3 z-20 flex items-center gap-1 bg-slate-950/80 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 opacity-90 group-hover:opacity-100 transition">
+        <div onclick="openFolder('${section.id}')" class="fcard" data-id="${section.id}" style="--c:${c}">
+          <div class="absolute top-3 right-3 z-20 flex items-center gap-1">
             ${orderButtons}
-            <button onclick="openSectionModalById('${section.id}', event)" class="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-300" title="Editar carpeta, foto o tamaño">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            </button>
+            <button onclick="openSectionModalById('${section.id}', event)" class="mini" title="Editar carpeta"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
           </div>
-
-          <div class="relative ${heightClass} w-full overflow-hidden bg-slate-950 transition-all">
-            ${visualHeader}
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent pointer-events-none"></div>
+          <div class="cover">
+            ${visual}
+            <div class="shade"></div>
             <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="p-2 rounded-xl border backdrop-blur-md ${theme.badge} shrink-0">
-                  <i data-lucide="${section.icon || 'folder'}" class="w-4 h-4"></i>
-                </span>
+                <span class="icon-badge shrink-0"><i data-lucide="${section.icon || 'folder'}" class="w-4 h-4"></i></span>
                 <h3 class="text-lg font-bold text-white truncate drop-shadow">${section.name}</h3>
               </div>
-              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-950/80 border border-slate-700/80 text-slate-200 shrink-0">
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full text-white shrink-0" style="background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.15)">
                 ${count} ${count === 1 ? 'link' : 'links'}
               </span>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function createLinkCard(link, sectionColor, showFolderBadge = false) {
-      const effectiveColorKey = (link.cardColor && link.cardColor !== 'inherit') ? link.cardColor : sectionColor;
-      const theme = colorMap[effectiveColorKey] || colorMap.slate;
-      const textColorClass = textColorMap[link.textColor || 'white'] || 'text-slate-100';
-      const fontClass = fontFamilyMap[link.fontFamily || 'sans'] || 'font-custom-sans';
-      const sizeClass = fontSizeMap[link.fontSize || 'base'] || 'text-base';
-
-      const imgHeightClass = linkImgSizeMap[link.imageSize || 'md'] || 'h-36';
-      const imgFitClass = (link.imageFit === 'contain') ? 'object-contain p-2 bg-slate-950/80' : 'object-cover group-hover:scale-105';
-
-      const linkMediaHtml = link.imageUrl
-        ? `<div class="relative ${imgHeightClass} w-full rounded-xl overflow-hidden border border-slate-800/80 bg-slate-950 mb-3">
-             <img src="${link.imageUrl}" alt="${link.title}" class="w-full h-full ${imgFitClass} transition-transform duration-300" onerror="this.parentElement.classList.add('hidden')" />
-           </div>`
-        : '';
-
-      const tagsHtml = (link.tags || [])
-        .map(tag => `<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-950/70 border border-slate-800/80 text-slate-400">#${tag}</span>`)
-        .join('');
-
+      const c = colorHex(link.cardColor) || colorHex(sectionColor) || COLORS.slate;
+      const dom = domainOf(link.url);
+      const fav = `https://www.google.com/s2/favicons?domain=${dom}&sz=128`;
+      const fit = link.imageFit === 'contain' ? 'fit' : '';
+      const media = link.imageUrl
+        ? `<img class="photo ${fit}" src="${link.imageUrl}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;ph&quot;><img src=&quot;${fav}&quot; alt=&quot;&quot;><span>${dom}</span></div>'" />`
+        : `<div class="ph"><img src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" /><span>${dom}</span></div>`;
+      const tags = (link.tags || []).map(t => `<span class="tag">#${t}</span>`).join('');
       const sec = appData.sections.find(s => s.id === link.sectionId);
-      const secTheme = colorMap[sectionColor] || colorMap.slate;
-      const folderPill = (showFolderBadge && sec)
-        ? `<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md border ${secTheme.badge} mb-2">
-             <i data-lucide="${sec.icon || 'folder'}" class="w-3 h-3"></i>
-             ${sec.name}
-           </span>`
-        : '';
-
-      const orderControls = (editMode && !showFolderBadge) ? `
-        <button onclick="moveLink('${link.id}', -1, event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-slate-800 text-slate-300 border border-slate-800" title="Mover antes">
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        </button>
-        <button onclick="moveLink('${link.id}', 1, event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-slate-800 text-slate-300 border border-slate-800" title="Mover después">
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-        </button>
-      ` : '';
-
+      const sc = sec ? (colorHex(sec.color) || COLORS.slate) : c;
+      const pill = (showFolderBadge && sec)
+        ? `<span class="pill mb-1.5" style="--c:${sc}"><i data-lucide="${sec.icon || 'folder'}" class="w-3 h-3 shrink-0"></i><span class="truncate">${sec.name}</span></span>` : '';
+      const order = (editMode && !showFolderBadge) ? `
+        <button onclick="moveLink('${link.id}', -1, event)" class="mini" title="Mover antes"><i data-lucide="arrow-left" class="w-3.5 h-3.5"></i></button>
+        <button onclick="moveLink('${link.id}', 1, event)" class="mini" title="Mover después"><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>` : '';
       return `
-        <div class="group relative flex flex-col justify-between p-4 rounded-2xl ${theme.cardBg} border ${theme.border} ${theme.hover} transition-all duration-200 ${fontClass}">
-          <!-- Barra de acciones rápidas en cada link -->
-          <div class="absolute top-3 right-3 z-10 flex items-center gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 ${editMode ? '!opacity-100' : ''} transition-opacity">
-            ${orderControls}
-            <button onclick="togglePin('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 border border-slate-800 ${link.pinned ? 'text-amber-400' : 'text-slate-400 hover:text-slate-200'}" title="Fijar / Desfijar">
-              <i data-lucide="pin" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="openLinkModalById('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-sky-500/20 text-sky-400 border border-slate-800" title="Editar foto/vista previa, mover carpeta, cambiar color o letra">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="deleteLink('${link.id}', event)" class="p-1.5 rounded-lg bg-slate-950/90 hover:bg-red-500/20 text-red-400 border border-slate-800" title="Borrar link">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
+        <div class="lcard" data-id="${link.id}" style="--c:${c}">
+          <div class="bar"></div>
+          <div class="actions">
+            ${order}
+            <button onclick="copyLink('${link.id}', event)" class="mini opt" title="Copiar link"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+            <button onclick="togglePin('${link.id}', event)" class="mini opt" ${link.pinned ? 'style="color:var(--accent)"' : ''} title="Fijar / desfijar"><i data-lucide="pin" class="w-3.5 h-3.5"></i></button>
+            <button onclick="openLinkModalById('${link.id}', event)" class="mini" title="Editar"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
           </div>
-
-          <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="block flex-1">
-            ${linkMediaHtml}
-            ${folderPill}
-            <div class="flex items-start justify-between gap-2 pr-14">
-              <h3 class="font-semibold ${sizeClass} ${textColorClass} group-hover:underline decoration-slate-500/60 underline-offset-4 transition leading-snug">
-                ${link.title}
-              </h3>
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="inner block" onclick="trackOpen('${link.id}')" onauxclick="trackOpen('${link.id}')">
+            <div class="media">${media}<img class="fav" src="${fav}" alt="" loading="lazy" style="display:none" onerror="this.style.visibility='hidden'" /></div>
+            <div class="body">
+              <span class="dot" style="display:none; width:.55rem; height:.55rem; border-radius:99px; background:${c}; flex-shrink:0"></span>
+              ${pill}
+              <h3 class="clamp1">${link.title}</h3>
+              <span class="dom muted text-xs truncate" style="display:none">${dom}</span>
+              <p class="desc clamp2">${link.description || ''}</p>
+              <div class="tags">${tags}</div>
             </div>
-            ${link.description ? `<p class="text-xs text-slate-400 mt-1.5 line-clamp-2">${link.description}</p>` : ''}
           </a>
-
-          ${tagsHtml ? `<div class="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-slate-800/60">${tagsHtml}</div>` : ''}
-        </div>
-      `;
+        </div>`;
     }
 
     function render() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const query = getQuery();
       const homeView = document.getElementById('homeView');
       const folderDetailView = document.getElementById('folderDetailView');
       const searchResultsView = document.getElementById('searchResultsView');
       const emptyState = document.getElementById('emptyState');
-
-      homeView.classList.add('hidden');
-      folderDetailView.classList.add('hidden');
-      searchResultsView.classList.add('hidden');
-      emptyState.classList.add('hidden');
+      [homeView, folderDetailView, searchResultsView, emptyState].forEach(v => v.classList.add('hidden'));
+      document.getElementById('appContent').classList.toggle('edit-on', editMode);
+      document.getElementById('bbHome').classList.toggle('on', !activeFolderId && !query);
 
       if (query) {
         const matchedLinks = appData.links.filter(link =>
@@ -1166,7 +1149,6 @@
           (link.description || '').toLowerCase().includes(query) ||
           (link.tags || []).some(t => t.toLowerCase().includes(query))
         );
-
         if (matchedLinks.length === 0) {
           emptyState.classList.remove('hidden');
         } else {
@@ -1182,72 +1164,45 @@
 
       if (activeFolderId) {
         const section = appData.sections.find(s => s.id === activeFolderId);
-        if (!section) {
-          activeFolderId = null;
-          render();
-          return;
-        }
-
+        if (!section) { activeFolderId = null; render(); return; }
         folderDetailView.classList.remove('hidden');
-        const theme = colorMap[section.color] || colorMap.slate;
+        const c = colorHex(section.color) || COLORS.slate;
         const secLinks = appData.links.filter(l => l.sectionId === section.id);
-        const bannerHeight = detailBannerHeightMap[section.coverSize || 'md'] || 'h-44 sm:h-56';
-        const fitClass = (section.coverFit === 'contain') ? 'object-contain p-3' : 'object-cover';
-        const posClass = coverPosMap[section.coverPos || 'center'] || 'object-center';
-
-        const bannerHtml = section.coverImage
-          ? `<div class="relative ${bannerHeight} w-full overflow-hidden bg-slate-950">
-               <img src="${section.coverImage}" alt="${section.name}" class="w-full h-full ${fitClass} ${posClass}" />
-               <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none"></div>
+        const pos = coverPosMap[section.coverPos || 'center'] || 'object-center';
+        const banner = section.coverImage
+          ? `<div class="relative h-40 sm:h-56 w-full overflow-hidden">
+               <img src="${section.coverImage}" alt="" class="w-full h-full object-cover ${pos}" />
+               <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(var(--surface), 1), transparent 75%)"></div>
              </div>`
-          : `<div class="h-24 w-full bg-gradient-to-r ${theme.gradient}"></div>`;
-
+          : `<div class="h-24 w-full" style="background: linear-gradient(90deg, color-mix(in srgb, ${c} 40%, transparent), transparent)"></div>`;
         document.getElementById('folderDetailHeader').innerHTML = `
-          ${bannerHtml}
-          <div class="p-6 flex flex-wrap items-center justify-between gap-4">
+          ${banner}
+          <div class="p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4" style="--c:${c}">
             <div class="flex items-center gap-3">
-              <span class="p-3 rounded-2xl border ${theme.badge}">
-                <i data-lucide="${section.icon || 'folder'}" class="w-6 h-6"></i>
-              </span>
+              <span class="icon-badge" style="padding:.7rem"><i data-lucide="${section.icon || 'folder'}" class="w-6 h-6"></i></span>
               <div>
-                <h2 class="text-xl sm:text-2xl font-bold text-white">${section.name}</h2>
-                <p class="text-xs text-slate-400 mt-0.5">${secLinks.length} ${secLinks.length === 1 ? 'enlace guardado' : 'enlaces guardados'}</p>
+                <h2 class="text-xl sm:text-2xl font-extrabold txt">${section.name}</h2>
+                <p class="text-xs muted mt-0.5">${secLinks.length} ${secLinks.length === 1 ? 'enlace guardado' : 'enlaces guardados'}</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openSectionModalById('${section.id}')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-                <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400"></i>
-                <span>Editar carpeta / foto</span>
-              </button>
-              <button onclick="openLinkModal(null, '${section.id}')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span>Agregar link aquí</span>
-              </button>
+              <button onclick="openSectionModalById('${section.id}')" class="btn btn-ghost text-xs"><i data-lucide="pencil" class="w-3.5 h-3.5 acc"></i><span>Editar carpeta</span></button>
+              <button onclick="openLinkModal(null, '${section.id}')" class="btn btn-accent text-xs"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span>Agregar link</span></button>
             </div>
-          </div>
-        `;
-
-        const linksGrid = document.getElementById('folderLinksGrid');
-        if (secLinks.length === 0) {
-          linksGrid.innerHTML = `
-            <div class="col-span-full p-12 rounded-3xl border border-dashed border-slate-800 text-center">
-              <p class="text-sm text-slate-400 mb-3">Esta carpeta todavía no tiene enlaces.</p>
-              <button onclick="openLinkModal(null, '${section.id}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>Agregar primer link</span>
-              </button>
-            </div>
-          `;
-        } else {
-          linksGrid.innerHTML = secLinks.map(link => createLinkCard(link, section.color, false)).join('');
-        }
-
+          </div>`;
+        const grid = document.getElementById('folderLinksGrid');
+        grid.innerHTML = secLinks.length === 0
+          ? `<div class="col-span-full p-12 rounded-3xl text-center" style="border: 1px dashed rgba(var(--line), .15)">
+               <p class="text-sm muted mb-3">Esta carpeta todavía no tiene enlaces.</p>
+               <button onclick="openLinkModal(null, '${section.id}')" class="btn btn-accent"><i data-lucide="plus" class="w-4 h-4"></i><span>Agregar primer link</span></button>
+             </div>`
+          : secLinks.map(link => createLinkCard(link, section.color, false)).join('');
+        buildDropChips(section.id);
         lucide.createIcons();
         return;
       }
 
       homeView.classList.remove('hidden');
-
       const pinnedLinks = appData.links.filter(l => l.pinned);
       const pinnedContainer = document.getElementById('pinnedContainer');
       if (pinnedLinks.length > 0) {
@@ -1259,63 +1214,114 @@
       } else {
         pinnedContainer.classList.add('hidden');
       }
+      const topLinks = appData.links.filter(l => (l.clicks || 0) > 0)
+        .sort((a, b) => (b.clicks || 0) - (a.clicks || 0) || (b.lastOpened || 0) - (a.lastOpened || 0))
+        .slice(0, 6);
+      document.getElementById('topContainer').classList.toggle('hidden', topLinks.length === 0);
+      document.getElementById('topGrid').innerHTML = topLinks.map(link => {
+        const sec = appData.sections.find(s => s.id === link.sectionId);
+        return createLinkCard(link, sec ? sec.color : 'slate', true);
+      }).join('');
 
       const foldersGrid = document.getElementById('foldersGrid');
       document.getElementById('foldersCountBadge').textContent = `${appData.sections.length} carpetas`;
-
-      if (appData.sections.length === 0) {
-        foldersGrid.innerHTML = `
-          <div class="col-span-full p-12 rounded-3xl border border-dashed border-slate-800 text-center">
-            <p class="text-sm text-slate-400 mb-3">Aún no creaste ninguna carpeta.</p>
-            <button onclick="openSectionModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-sky-600 hover:bg-sky-500 text-white transition">
-              <i data-lucide="folder-plus" class="w-4 h-4"></i>
-              <span>Crear primera carpeta</span>
-            </button>
-          </div>
-        `;
-      } else {
-        foldersGrid.innerHTML = appData.sections.map(sec => createFolderCard(sec)).join('');
-      }
-
+      foldersGrid.innerHTML = appData.sections.length === 0
+        ? `<div class="col-span-full p-12 rounded-3xl text-center" style="border: 1px dashed rgba(var(--line), .15)">
+             <p class="text-sm muted mb-3">Aún no creaste ninguna carpeta.</p>
+             <button onclick="openSectionModal()" class="btn btn-accent"><i data-lucide="folder-plus" class="w-4 h-4"></i><span>Crear primera carpeta</span></button>
+           </div>`
+        : appData.sections.map(sec => createFolderCard(sec)).join('');
       lucide.createIcons();
     }
 
+    // ---------- Apariencia ----------
+    let draft = null;
+    let savedSettings = null;
+    function openAppearance() {
+      savedSettings = getSettings();
+      draft = Object.assign({}, savedSettings);
+      document.getElementById('bgImageUrl').value = draft.bgImage && !draft.bgImage.startsWith('data:') ? draft.bgImage : '';
+      renderAppearanceUI();
+      openModal('appearanceModal');
+    }
+    function setAppearance(patch) {
+      Object.assign(draft, patch);
+      applyAppearance(draft);
+      renderAppearanceUI();
+    }
+    function renderAppearanceUI() {
+      document.getElementById('themeGrid').innerHTML = Object.entries(THEMES).map(([k, t]) => `
+        <button type="button" class="theme-card ${draft.theme === k ? 'on' : ''}" style="background:${t.bg}" onclick="setAppearance({theme:'${k}', accent:null})">
+          <div class="flex gap-1 mb-2">
+            <span class="w-4 h-4 rounded-full" style="background:${t.accent}"></span>
+            <span class="w-4 h-4 rounded-full" style="background:${t.bg2}"></span>
+            <span class="w-4 h-4 rounded-full" style="background:rgb(${t.surface}); border:1px solid rgba(${t.line},.2)"></span>
+          </div>
+          <span class="text-[11px] font-bold" style="color:${t.text}">${t.name}</span>
+        </button>`).join('');
+
+      const t = THEMES[draft.theme] || THEMES.lima;
+      const curAccent = draft.accent || t.accent;
+      const isCustom = !Object.values(COLORS).includes(curAccent) && curAccent !== t.accent;
+      document.getElementById('accentSwatches').innerHTML =
+        Object.keys(COLORS).map(k => `<button type="button" class="sw ${curAccent === COLORS[k] ? 'on' : ''}" style="background:${COLORS[k]}" title="${COLOR_NAMES[k]}" onclick="setAppearance({accent:'${COLORS[k]}'})"></button>`).join('') +
+        `<label class="sw sw-custom ${isCustom ? 'on' : ''}" title="Elegir cualquier color" ${isCustom ? `style="background:${curAccent}"` : ''}><input type="color" value="${curAccent}" onchange="setAppearance({accent:this.value})" /></label>`;
+
+      const opt = (group, key, val, label, icon) =>
+        `<button type="button" class="opt-btn ${draft[key] === val ? 'on' : ''}" onclick="setAppearance({${key}:'${val}'})"><i data-lucide="${icon}" class="w-4 h-4"></i>${label}</button>`;
+      document.getElementById('bgTypeOpts').innerHTML =
+        opt('bg', 'bgType', 'solid', 'Liso', 'square') + opt('bg', 'bgType', 'gradient', 'Degradado', 'sunrise') + opt('bg', 'bgType', 'image', 'Imagen', 'image');
+      document.getElementById('bgImageBox').classList.toggle('hidden', draft.bgType !== 'image');
+      document.getElementById('viewOpts').innerHTML =
+        opt('v', 'view', 'large', 'Grande', 'layout-grid') + opt('v', 'view', 'compact', 'Compacta', 'rows-3') + opt('v', 'view', 'list', 'Lista', 'list');
+      document.getElementById('fontOpts').innerHTML =
+        opt('f', 'fontSize', 'sm', 'Chica', 'a-arrow-down') + opt('f', 'fontSize', 'md', 'Normal', 'type') + opt('f', 'fontSize', 'lg', 'Grande', 'a-arrow-up');
+      document.getElementById('glassSwitch').classList.toggle('on', !!draft.glass);
+      lucide.createIcons();
+    }
+    document.getElementById('bgImageUrl').addEventListener('input', e => setAppearance({ bgImage: e.target.value.trim() }));
+    document.getElementById('bgImageFile').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      compressImage(file, 1600, url => setAppearance({ bgImage: url, bgType: 'image' }));
+    });
+    function resetAppearance() { setAppearance(Object.assign({}, DEFAULT_SETTINGS)); }
+    function closeAppearance(save) {
+      if (save) {
+        appData.settings = Object.assign({}, draft);
+        applyAppearance(appData.settings);
+        render();
+        persistChanges();
+      } else if (savedSettings) {
+        applyAppearance(savedSettings);
+      }
+      closeModal('appearanceModal');
+    }
+
+    // ---------- Botones y formularios ----------
     document.getElementById('toggleEditBtn').addEventListener('click', () => {
       editMode = !editMode;
-      const toolbar = document.getElementById('editToolbar');
-      const btnText = document.getElementById('toggleEditText');
-      if (editMode) {
-        toolbar.classList.remove('hidden');
-        btnText.textContent = 'Listo';
-      } else {
-        toolbar.classList.add('hidden');
-        btnText.textContent = 'Ordenar';
-      }
+      document.getElementById('editToolbar').classList.toggle('hidden', !editMode);
+      document.getElementById('toggleEditText').textContent = editMode ? 'Listo' : 'Ordenar';
       render();
     });
-
     document.getElementById('addSectionBtn').addEventListener('click', () => openSectionModal());
     document.getElementById('addLinkBtn').addEventListener('click', () => openLinkModal());
 
     document.getElementById('sectionForm').addEventListener('submit', e => {
       e.preventDefault();
       const id = document.getElementById('sectionId').value;
-      const secObj = {
+      const prev = id ? appData.sections.find(s => s.id === id) : null;
+      const secObj = Object.assign({}, prev || {}, {
         id: id || 'sec-' + Date.now(),
         name: document.getElementById('sectionName').value.trim(),
         color: document.getElementById('sectionColor').value,
         icon: document.getElementById('sectionIcon').value,
         coverImage: document.getElementById('sectionCoverUrl').value.trim(),
-        coverSize: document.getElementById('sectionCoverSize').value,
-        coverFit: document.getElementById('sectionCoverFit').value,
         coverPos: document.getElementById('sectionCoverPos').value
-      };
-      if (id) {
-        const idx = appData.sections.findIndex(s => s.id === id);
-        if (idx !== -1) appData.sections[idx] = secObj;
-      } else {
-        appData.sections.push(secObj);
-      }
+      });
+      if (prev) appData.sections[appData.sections.indexOf(prev)] = secObj;
+      else appData.sections.push(secObj);
       closeSectionModal();
       render();
       persistChanges();
@@ -1325,72 +1331,209 @@
       e.preventDefault();
       const id = document.getElementById('linkId').value;
       const tagsRaw = document.getElementById('linkTags').value;
-      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-      const linkObj = {
+      const prev = id ? appData.links.find(l => l.id === id) : null;
+      const linkObj = Object.assign({}, prev || {}, {
         id: id || 'lnk-' + Date.now(),
         sectionId: document.getElementById('linkSection').value,
         title: document.getElementById('linkTitle').value.trim(),
         url: document.getElementById('linkUrl').value.trim(),
         description: document.getElementById('linkDesc').value.trim(),
         imageUrl: document.getElementById('linkImageUrl').value.trim(),
-        imageSize: document.getElementById('linkImageSize').value,
         imageFit: document.getElementById('linkImageFit').value,
         cardColor: document.getElementById('linkCardColor').value,
-        textColor: document.getElementById('linkTextColor').value,
-        fontFamily: document.getElementById('linkFontFamily').value,
-        fontSize: document.getElementById('linkFontSize').value,
-        tags,
+        tags: tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [],
         pinned: document.getElementById('linkPinned').checked
-      };
-      if (id) {
-        const idx = appData.links.findIndex(l => l.id === id);
-        if (idx !== -1) appData.links[idx] = linkObj;
-      } else {
-        appData.links.push(linkObj);
-      }
+      });
+      if (prev) appData.links[appData.links.indexOf(prev)] = linkObj;
+      else appData.links.push(linkObj);
       closeLinkModal();
       render();
       persistChanges();
     });
 
     document.getElementById('exportBtn').addEventListener('click', () => {
-      const dataStr = JSON.stringify(appData, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = JSON_FILE;
-      a.click();
+      a.href = url; a.download = JSON_FILE; a.click();
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById('searchInput').addEventListener('input', () => render());
+    // Cerrar modales tocando afuera
+    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => {
+      if (e.target !== m) return;
+      if (m.id === 'appearanceModal') closeAppearance(false); else closeModal(m.id);
+    }));
 
-    lucide.createIcons();
-
-    if (localStorage.getItem(TOKEN_KEY)) {
-      setCloudStatus('ok', 'Nube conectada');
-    } else {
-      setCloudStatus('warn', 'Falta Token (clic aquí)');
+    // ---------- Avisos ----------
+    let toastTimer = null;
+    function showToast(text, undoFn = null) {
+      const t = document.getElementById('toast');
+      const undo = document.getElementById('toastUndo');
+      document.getElementById('toastText').textContent = text;
+      undo.classList.toggle('hidden', !undoFn);
+      undo.onclick = () => { t.classList.remove('show'); clearTimeout(toastTimer); if (undoFn) undoFn(); };
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), undoFn ? 7000 : 2200);
     }
 
-    fetch(JSON_FILE + '?t=' + Date.now())
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(data => {
-        appData = data;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        render();
-      })
-      .catch(() => {
-        const localSaved = localStorage.getItem(STORAGE_KEY);
-        if (localSaved) {
-          appData = JSON.parse(localSaved);
-          render();
+    // ---------- Copiar link ----------
+    function copyLink(linkId, event) {
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      const link = appData.links.find(l => l.id === linkId);
+      if (!link) return;
+      const done = () => showToast('Link copiado');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link.url).then(done).catch(() => fallbackCopy(link.url, done));
+      } else fallbackCopy(link.url, done);
+    }
+    function fallbackCopy(text, done) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch { prompt('Copiá el link:', text); }
+      ta.remove();
+    }
+
+    // ---------- Más usados ----------
+    let clickSaveTimer = null;
+    function trackOpen(linkId) {
+      if (justDragged) return;
+      const link = appData.links.find(l => l.id === linkId);
+      if (!link) return;
+      link.clicks = (link.clicks || 0) + 1;
+      link.lastOpened = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      clearTimeout(clickSaveTimer);
+      clickSaveTimer = setTimeout(() => {
+        if (localStorage.getItem(TOKEN_KEY)) persistChanges();
+        if (!activeFolderId && !getQuery()) render();
+      }, 4000);
+    }
+
+    // ---------- Completar solo al pegar una URL ----------
+    document.getElementById('linkUrl').addEventListener('change', e => {
+      const raw = e.target.value.trim();
+      if (!raw) return;
+      const titleEl = document.getElementById('linkTitle');
+      const imgEl = document.getElementById('linkImageUrl');
+      const dom = domainOf(raw);
+      if (!titleEl.value.trim() && dom) {
+        const name = dom.split('.')[0];
+        titleEl.value = name.charAt(0).toUpperCase() + name.slice(1);
+      }
+      if (!imgEl.value.trim()) generateLinkPreview();
+    });
+
+    // ---------- Arrastrar y soltar ----------
+    const DRAG_OPTS = { animation: 220, delay: 220, delayOnTouchOnly: true, touchStartThreshold: 6,
+      ghostClass: 'drag-ghost', chosenClass: 'drag-chosen', filter: '.actions, .mini', preventOnFilter: false };
+    let justDragged = false;
+    function markDragged() { justDragged = true; setTimeout(() => justDragged = false, 300); }
+    document.addEventListener('click', e => {
+      if (justDragged) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    function idsIn(el) { return [...el.children].map(c => c.dataset.id).filter(Boolean); }
+
+    function setupDrag() {
+      if (typeof Sortable === 'undefined') return;
+      // Carpetas: reordenar libremente
+      Sortable.create(document.getElementById('foldersGrid'), Object.assign({}, DRAG_OPTS, {
+        draggable: '.fcard',
+        onEnd: () => {
+          markDragged();
+          const order = idsIn(document.getElementById('foldersGrid'));
+          appData.sections.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+          persistChanges();
         }
+      }));
+      // Fijados: reordenar
+      Sortable.create(document.getElementById('pinnedGrid'), Object.assign({}, DRAG_OPTS, {
+        draggable: '.lcard',
+        onEnd: () => { markDragged(); reorderLinks(idsIn(document.getElementById('pinnedGrid'))); }
+      }));
+      // Links dentro de una carpeta: reordenar o pasar a otra carpeta
+      Sortable.create(document.getElementById('folderLinksGrid'), Object.assign({}, DRAG_OPTS, {
+        draggable: '.lcard',
+        group: { name: 'links', pull: true, put: false },
+        onStart: () => document.getElementById('dropBar').classList.add('show'),
+        onEnd: evt => {
+          markDragged();
+          document.getElementById('dropBar').classList.remove('show');
+          if (evt.to === evt.from) reorderLinks(idsIn(document.getElementById('folderLinksGrid')));
+        }
+      }));
+    }
+
+    // Reordena los links indicados respetando el lugar que ocupan en la lista general
+    function reorderLinks(orderedIds) {
+      const slots = [];
+      appData.links.forEach((l, i) => { if (orderedIds.includes(l.id)) slots.push(i); });
+      const moved = orderedIds.map(id => appData.links.find(l => l.id === id));
+      slots.forEach((slot, k) => appData.links[slot] = moved[k]);
+      persistChanges();
+    }
+
+    function buildDropChips(currentId) {
+      const box = document.getElementById('dropChips');
+      box.innerHTML = appData.sections.filter(s => s.id !== currentId).map(s => `
+        <div class="drop-chip" data-section="${s.id}" style="--c:${colorHex(s.color) || COLORS.slate}">
+          <i data-lucide="${s.icon || 'folder'}" class="w-4 h-4 shrink-0" style="color:${colorHex(s.color) || COLORS.slate}"></i>
+          <span class="truncate" style="max-width:8rem">${s.name}</span>
+        </div>`).join('');
+      if (typeof Sortable === 'undefined') return;
+      box.querySelectorAll('.drop-chip').forEach(chip => {
+        Sortable.create(chip, {
+          group: { name: 'links', pull: false, put: true },
+          draggable: '.lcard',
+          onAdd: evt => {
+            const link = appData.links.find(l => l.id === evt.item.dataset.id);
+            evt.item.remove();
+            if (!link) return;
+            // lo manda al final de la carpeta destino
+            appData.links = appData.links.filter(l => l !== link);
+            link.sectionId = chip.dataset.section;
+            appData.links.push(link);
+            document.getElementById('dropBar').classList.remove('show');
+            render();
+            persistChanges();
+          }
+        });
       });
+    }
+
+    // ---------- Inicio ----------
+    setupDrag();
+    lucide.createIcons();
+    setCloudStatus(localStorage.getItem(TOKEN_KEY) ? 'ok' : 'warn', localStorage.getItem(TOKEN_KEY) ? 'Nube conectada' : 'Falta Token (tocá acá)');
+
+    function loadData(data) {
+      appData = data;
+      if (!appData.settings) appData.settings = {};
+      applyAppearance(getSettings());
+      render();
+    }
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) { try { loadData(JSON.parse(cached)); } catch {} } else { applyAppearance(DEFAULT_SETTINGS); }
+
+    async function fetchRemote() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${DATA_REPO}/contents/${JSON_FILE}?t=${Date.now()}`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.raw+json' }
+        });
+        if (res.ok) return res.json();
+      }
+      if (DATA_REPO !== GITHUB_REPO) throw new Error('Sin token');
+      const res = await fetch(JSON_FILE + '?t=' + Date.now());
+      if (!res.ok) throw new Error();
+      return res.json();
+    }
+    fetchRemote()
+      .then(data => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); loadData(data); })
+      .catch(() => { if (!localStorage.getItem(TOKEN_KEY)) openGithubModal(); });
   </script>
 </body>
 </html>
