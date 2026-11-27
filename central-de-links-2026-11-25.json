@@ -155,7 +155,9 @@
         "actions",
         "deploy"
       ],
-      "pinned": false
+      "pinned": false,
+      "clicks": 1,
+      "lastOpened": 1795803004398
     },
     {
       "id": "lnk-v7",
