@@ -526,6 +526,18 @@
       "cardColor": "violet",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795872162856",
+      "sectionId": "sec-vive",
+      "title": "Anotar producciones",
+      "url": "https://producciones-ba-zebra.netlify.app/",
+      "description": "",
+      "imageUrl": "https://image.thum.io/get/width/800/crop/450/https://producciones-ba-zebra.netlify.app/",
+      "imageFit": "cover",
+      "cardColor": "emerald",
+      "tags": [],
+      "pinned": false
     }
   ],
   "settings": {
