@@ -514,6 +514,18 @@
       "fontSize": "base",
       "tags": [],
       "pinned": false
+    },
+    {
+      "id": "lnk-1795825993489",
+      "sectionId": "sec-1795825967154",
+      "title": "Elecciones Web resultados",
+      "url": "https://viveclickcaba-sketch.github.io/elecciones/",
+      "description": "",
+      "imageUrl": "https://image.thum.io/get/width/800/crop/450/https://viveclickcaba-sketch.github.io/elecciones/",
+      "imageFit": "cover",
+      "cardColor": "inherit",
+      "tags": [],
+      "pinned": false
     }
   ],
   "settings": {
